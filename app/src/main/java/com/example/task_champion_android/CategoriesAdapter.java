@@ -16,6 +16,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     Context context;
     ArrayList<Category> categories;
+    public static int selectedIndex = 0;
 
     public CategoriesAdapter(Context context, ArrayList<Category> categories) {
         this.context = context;
@@ -38,8 +39,12 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, int position) {
         holder.categoryName.setText(categories.get(position).getName());
-        holder.taskCounter.setText(String.format("%d", categories.get(position).getTaskCounter()));
+        holder.taskCounter.setText(String.format(context.getResources().getString(R.string.taskCounter), categories.get(position).getTaskCounter()));
         holder.itemCounter.setProgress(categories.get(position).getItemCounter());
+        holder.itemView.setOnClickListener(v -> {
+            notifyItemChanged(position);
+            selectedIndex = position;
+        });
     }
 
     class CatViewHolder extends RecyclerView.ViewHolder {

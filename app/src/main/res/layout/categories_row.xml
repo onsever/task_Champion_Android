@@ -28,14 +28,14 @@
                     android:id="@+id/taskCounter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="3"
+                    android:text="@string/taskCounter"
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=" tasks" />
+                    android:text="@string/tasks" />
 
             </LinearLayout>
 
@@ -47,7 +47,6 @@
                 android:id="@+id/categoryName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Business"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="30sp"
