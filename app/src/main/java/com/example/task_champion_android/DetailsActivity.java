@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
 import android.content.Context;
@@ -17,10 +18,12 @@ import android.widget.Toast;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    private final ArrayList<AudioItem> itemList = new ArrayList<>();
     private ActivityDetailsBinding binding;
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
@@ -35,6 +38,11 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
+        binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
+        binding.audioRecyclerView.setAdapter(audioItemsAdapter);
 
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),0);
