@@ -3,10 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/drawable/completion_view.xml" value="0.169" />
+        <entry key="app/src/main/res/drawable/completion_view.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.169" />
         <entry key="app/src/main/res/drawable/task_button_background.xml" value="0.169" />
-        <entry key="app/src/main/res/drawable/uncompleted_view.xml" value="0.169" />
+        <entry key="app/src/main/res/drawable/uncompleted_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_categories.xml" value="0.24003623188405798" />
         <entry key="app/src/main/res/layout/activity_details.xml" value="0.24003623188405798" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.335" />
