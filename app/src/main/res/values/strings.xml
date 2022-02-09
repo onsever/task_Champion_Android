@@ -5,4 +5,5 @@
     <string name="sortByTask">Sort by Task</string>
     <string name="sortByDate">Sort by Date</string>
     <string name="add_task">Add Task</string>
+    <string name="categories">Categories</string>
 </resources>

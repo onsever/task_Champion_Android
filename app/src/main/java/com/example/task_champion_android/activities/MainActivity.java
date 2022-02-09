@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -85,7 +86,14 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
         categoriesAdapter = new CategoriesAdapter(this, this);
         tasksAdapter = new TasksAdapter(this, this);
+        binding.catBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(MainActivity.this,CategoriesActivity.class);
+                startActivity(intent);
 
+            }
+        });
         binding.tasksRecyclerView.setAdapter(tasksAdapter);
         binding.tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 

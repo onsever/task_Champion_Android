@@ -26,6 +26,11 @@
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="bold" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/catBtn"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoriesRecyclerView"
