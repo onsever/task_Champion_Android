@@ -44,7 +44,7 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         // Create dummy data
         itemList.add(new AudioItem("1","/1/111/"));
-        itemList.add(new AudioItem("2","/1/111/"));
+        itemList.add(new AudioItem("2","/1/222/"));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
@@ -74,8 +74,10 @@ public class DetailsActivity extends AppCompatActivity {
         if (!filePath.isEmpty()) {
             mediaRecorder.stop();
             mediaRecorder = null;
+            String name = String.valueOf(itemList.size());
+            itemList.add(new AudioItem(name,filePath));
+            Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }
-        playAudio(filePath);
     }
 
 
@@ -101,7 +103,6 @@ public class DetailsActivity extends AppCompatActivity {
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             mediaPlayer.start();
-            Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }catch (IOException e) {
             e.printStackTrace();
         }
