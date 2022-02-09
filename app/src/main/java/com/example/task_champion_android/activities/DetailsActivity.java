@@ -13,6 +13,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.task_champion_android.AudioItem;
@@ -32,7 +34,7 @@ public class DetailsActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private String filePath = "";
 
-    private final int REQUEST_PERMISSION_CODE = 1000;
+    private final int REQUEST_PERMISSION_CODE = 1;
 
 
     @Override
@@ -47,7 +49,18 @@ public class DetailsActivity extends AppCompatActivity {
         AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
-
+        binding.recordAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startRecording();
+            }
+        });
+        binding.playAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopRecording();
+            }
+        });
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),0);
 
@@ -57,6 +70,15 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void stopRecording() {
+        if (!filePath.isEmpty()) {
+            mediaRecorder.stop();
+            mediaRecorder = null;
+        }
+        playAudio(filePath);
+    }
+
+
     private void startRecording() {
         if(checkDevicePermission()){
             filePath = getExternalCacheDir().getAbsolutePath() + UUID.randomUUID().toString();
@@ -64,6 +86,7 @@ public class DetailsActivity extends AppCompatActivity {
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
+                Toast.makeText(this, "start recording", Toast.LENGTH_LONG).show();
             }catch (IllegalStateException | IOException ise) {
                 ise.printStackTrace();
             }
@@ -77,6 +100,8 @@ public class DetailsActivity extends AppCompatActivity {
         try{
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
+            mediaPlayer.start();
+            Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }catch (IOException e) {
             e.printStackTrace();
         }

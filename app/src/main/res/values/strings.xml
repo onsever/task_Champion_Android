@@ -5,4 +5,6 @@
     <string name="sortByTask">Sort by Task</string>
     <string name="sortByDate">Sort by Date</string>
     <string name="add_task">Add Task</string>
+    <string name="start_audio">Start Audio</string>
+    <string name="play">Play</string>
 </resources>
