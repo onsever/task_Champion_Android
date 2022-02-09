@@ -1,4 +1,4 @@
-package com.example.task_champion_android;
+package com.example.task_champion_android.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

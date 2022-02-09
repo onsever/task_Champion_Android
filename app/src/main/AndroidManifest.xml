@@ -15,13 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Task_Champion_Android">
         <activity
-            android:name=".CategoriesActivity"
+            android:name=".activities.CategoriesActivity"
             android:exported="false" />
         <activity
-            android:name=".DetailsActivity"
+            android:name=".activities.DetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,27 +1,33 @@
-package com.example.task_champion_android;
+package com.example.task_champion_android.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.task_champion_android.R;
 import com.example.task_champion_android.databinding.TasksRowBinding;
+import com.example.task_champion_android.db.Item;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
 
     TasksRowBinding binding;
     Context context;
-    ArrayList<Item> items;
+    private List<Item> items;
+    private ItemClickListener itemClickListener;
 
-    public TasksAdapter(Context context, ArrayList<Item> items) {
+    public TasksAdapter(Context context, ItemClickListener itemClickListener) {
         this.context = context;
+        this.itemClickListener = itemClickListener;
+    }
+
+    public void setItems(List<Item> items) {
         this.items = items;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,12 +39,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     @Override
     public int getItemCount() {
+        if (items == null || items.size() == 0) {
+            return 0;
+        }
+
         return items.size();
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        binding.taskName.setText(items.get(position).getName());
+        binding.taskName.setText(items.get(position).getItemName());
+        itemClickListener.onItemClickedOn(items.get(position));
 
         if (items.get(position).isCompleted()) {
             binding.completedView.setBackground(context.getDrawable(R.drawable.completion_view));
@@ -55,6 +66,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
         public TaskViewHolder(@NonNull TasksRowBinding binding) {
             super(binding.getRoot());
         }
+    }
+
+    public interface ItemClickListener {
+        void onItemClickedOn(Item item);
     }
 
 }
