@@ -1,5 +1,6 @@
 package com.example.task_champion_android;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -43,5 +44,11 @@ public class AudioItemsAdapter extends RecyclerView.Adapter<AudioItemsAdapter.Au
         public  AudioItemViewHolder( @NonNull AudioRowBinding binding) {
             super(binding.getRoot());
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateItems(AudioItem item) {
+        itemList.add(item);
+        this.notifyDataSetChanged();
     }
 }

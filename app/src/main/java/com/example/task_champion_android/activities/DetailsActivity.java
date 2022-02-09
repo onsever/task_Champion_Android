@@ -44,6 +44,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private final int REQUEST_PERMISSION_CODE = 1;
 
+    private AudioItemsAdapter audioItemsAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,7 @@ public class DetailsActivity extends AppCompatActivity {
         itemList.add(new AudioItem("1","/1/111/"));
         itemList.add(new AudioItem("2","/1/222/"));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
+        audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
 
@@ -107,8 +109,10 @@ public class DetailsActivity extends AppCompatActivity {
         if (!filePath.isEmpty()) {
             mediaRecorder.stop();
             mediaRecorder = null;
-            String name = String.valueOf(itemList.size());
-            itemList.add(new AudioItem(name,filePath));
+            String name = String.valueOf(itemList.size()+1);
+            AudioItem newItem = new AudioItem(name,filePath);
+//            itemList.add(newItem);
+            audioItemsAdapter.updateItems(newItem);
             filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }
