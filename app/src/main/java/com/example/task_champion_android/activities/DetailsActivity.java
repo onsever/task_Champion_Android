@@ -15,6 +15,8 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.example.task_champion_android.AudioItem;
+import com.example.task_champion_android.AudioItemsAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
 
 import java.io.IOException;
@@ -38,7 +40,9 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        // Create dummy data
+        itemList.add(new AudioItem("1","/1/111/"));
+        itemList.add(new AudioItem("2","/1/111/"));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);

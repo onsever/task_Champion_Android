@@ -25,7 +25,6 @@ public class AudioItemsAdapter extends RecyclerView.Adapter<AudioItemsAdapter.Au
     @NonNull
     @Override
     public AudioItemsAdapter.AudioItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
         binding = AudioRowBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new AudioItemViewHolder(binding);
     }
