@@ -1,5 +1,9 @@
 package com.example.task_champion_android.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -7,12 +11,16 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -49,6 +57,19 @@ public class DetailsActivity extends AppCompatActivity {
         AudioItemsAdapter audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
+
+        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // There are no request codes
+                            Intent data = result.getData();
+                            //
+                        }
+                    }
+                });
         binding.recordAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,6 +82,12 @@ public class DetailsActivity extends AppCompatActivity {
                 stopRecording();
             }
         });
+        binding.importAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                importAudio();
+            }
+        });
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),0);
 
@@ -70,12 +97,19 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void importAudio() {
+        Intent intent = new Intent();
+        intent.setType("audio/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+    }
+
     private void stopRecording() {
         if (!filePath.isEmpty()) {
             mediaRecorder.stop();
             mediaRecorder = null;
             String name = String.valueOf(itemList.size());
             itemList.add(new AudioItem(name,filePath));
+            filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }
     }

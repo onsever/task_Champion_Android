@@ -44,6 +44,18 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/playAudio"
                 android:text="@string/stop" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="10dp" />
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/importAudio"
+                android:text="@string/importFile" />
+
         </LinearLayout>
 
 

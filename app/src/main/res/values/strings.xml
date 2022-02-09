@@ -8,4 +8,5 @@
     <string name="start_audio">Start Audio</string>
     <string name="play">Play</string>
     <string name="stop">stop</string>
+    <string name="importFile">import</string>
 </resources>
