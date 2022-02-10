@@ -47,8 +47,7 @@ public class AudioItemsAdapter extends RecyclerView.Adapter<AudioItemsAdapter.Au
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateItems(AudioItem item) {
-        itemList.add(item);
+    public void updateItems() {
         this.notifyDataSetChanged();
     }
 }

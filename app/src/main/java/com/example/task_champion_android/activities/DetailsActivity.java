@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -46,6 +47,10 @@ public class DetailsActivity extends AppCompatActivity {
 
     private AudioItemsAdapter audioItemsAdapter;
 
+    ActivityResultLauncher<Intent> activityResultLauncher;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +65,17 @@ public class DetailsActivity extends AppCompatActivity {
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
 
-        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            // There are no request codes
-                            Intent data = result.getData();
-                            //
-                        }
-                    }
-                });
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == RESULT_OK && result.getData() != null){
+                    Intent data = result.getData();
+                    Uri fileUri = data.getData();
+                    Log.d("detailsActivity", "imported file path: " + fileUri);
+                    playAudio(fileUri);
+                }
+            }
+        });
         binding.recordAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,6 +107,7 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("audio/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+        activityResultLauncher.launch(intent);
     }
 
     private void stopRecording() {
@@ -111,8 +116,8 @@ public class DetailsActivity extends AppCompatActivity {
             mediaRecorder = null;
             String name = String.valueOf(itemList.size()+1);
             AudioItem newItem = new AudioItem(name,filePath);
-//            itemList.add(newItem);
-            audioItemsAdapter.updateItems(newItem);
+            itemList.add(newItem);
+            audioItemsAdapter.updateItems();
             filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }
@@ -135,10 +140,15 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void playAudio (String path) {
+    private void playAudio (Uri path) {
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes(
+                new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .build()
+        );
         try{
-            mediaPlayer.setDataSource(path);
+            mediaPlayer.setDataSource(getApplicationContext(), path);
             mediaPlayer.prepare();
             mediaPlayer.start();
         }catch (IOException e) {
