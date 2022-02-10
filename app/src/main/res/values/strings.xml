@@ -5,4 +5,13 @@
     <string name="sortByTask">Sort by Task</string>
     <string name="sortByDate">Sort by Date</string>
     <string name="add_task">Add Task</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment1">hello_blank_fragment1</string>
+    <string name="hello_blank_fragment2">hello_blank_fragment2</string>
+    <string name="hello_blank_fragment3">hello_blank_fragment3</string>
+    <string name="subtask_detail">subtask_detail</string>
+    <string name="subtask_detail_fragment">subtask_detail_fragment</string>
+    <string name="audio_fragment">audio_fragement</string>
+    <string name="image_fragment">image_fragment</string>
 </resources>
