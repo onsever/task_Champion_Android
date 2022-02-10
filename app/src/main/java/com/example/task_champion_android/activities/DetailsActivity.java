@@ -21,6 +21,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,11 @@ import com.example.task_champion_android.AudioItem;
 import com.example.task_champion_android.AudioItemsAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -58,8 +63,8 @@ public class DetailsActivity extends AppCompatActivity {
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         // Create dummy data
-        itemList.add(new AudioItem("1","/1/111/"));
-        itemList.add(new AudioItem("2","/1/222/"));
+        itemList.add(new AudioItem("1",Uri.parse("/1/111/")));
+        itemList.add(new AudioItem("2",Uri.parse("/1/222/")));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
@@ -71,8 +76,9 @@ public class DetailsActivity extends AppCompatActivity {
                 if(result.getResultCode() == RESULT_OK && result.getData() != null){
                     Intent data = result.getData();
                     Uri fileUri = data.getData();
+                    addNewAudioFile(fileUri);
                     Log.d("detailsActivity", "imported file path: " + fileUri);
-                    playAudio(fileUri);
+//                    playAudio(fileUri);
                 }
             }
         });
@@ -95,7 +101,9 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC),0);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                ,0);
 
         // Check permission
         if(!checkDevicePermission()){
@@ -114,13 +122,18 @@ public class DetailsActivity extends AppCompatActivity {
         if (!filePath.isEmpty()) {
             mediaRecorder.stop();
             mediaRecorder = null;
-            String name = String.valueOf(itemList.size()+1);
-            AudioItem newItem = new AudioItem(name,filePath);
-            itemList.add(newItem);
-            audioItemsAdapter.updateItems();
+            Uri uri = Uri.parse(filePath);
+            addNewAudioFile(uri);
             filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void addNewAudioFile(Uri filePath) {
+        String name = String.valueOf(itemList.size()+1);
+        AudioItem newItem = new AudioItem(name,filePath);
+        itemList.add(newItem);
+        audioItemsAdapter.updateItems();
     }
 
 
