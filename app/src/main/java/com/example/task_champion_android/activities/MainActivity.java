@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     }
 
+
     private void initViewModel() {
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
         categoryViewModel.getCategoryList().observe(this, new Observer<List<Category>>() {

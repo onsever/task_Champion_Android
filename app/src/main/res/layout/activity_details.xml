@@ -58,6 +58,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/image"
+            android:onClick="upload"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <ImageButton

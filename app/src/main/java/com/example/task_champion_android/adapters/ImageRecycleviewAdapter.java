@@ -10,51 +10,45 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.task_champion_android.R;
+import com.example.task_champion_android.db.Image;
+import com.example.task_champion_android.supportClass.ImageBitmapString;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ImageRecycleviewAdapter extends RecyclerView.Adapter<ImageRecycleviewAdapter.ViewHolder>{
 
-    private static final String TAG = "RecycleViewAdapter";
+    List arrayList;
+    Context context;
 
-    private ArrayList<String> mImageUrls = new ArrayList<>();
-
-    public ImageRecycleviewAdapter(Context mContext , ArrayList<String> mImageUrls) {
-        this.mImageUrls = mImageUrls;
-        this.mContext = mContext;
+    public ImageRecycleviewAdapter(Context context ,List arrayList) {
+        this.arrayList = arrayList;
+        this.context = context;
     }
-
-    private Context mContext;
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_recycleview,parent,false);
-
-        return new ViewHolder(view);
+        ViewHolder viewHolder = new ViewHolder(view);
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mImageUrls.get(position))
-                .into(holder.image);
-
-        holder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
-        });
+        Image image = (Image)arrayList.get(position);
+        holder.image.setImageBitmap(ImageBitmapString.getBitMapFromStr(image.getImage()));
+        image.setImage(image.getImage());
     }
 
     @Override
     public int getItemCount() {
-        return mImageUrls.size();
+        return arrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
