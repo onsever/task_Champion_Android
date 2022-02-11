@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.ImageRecycleviewAdapter;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 public class DetailsActivity extends AppCompatActivity {
 
     Bitmap bitmap =null ;
-    int SELECT_PICTURE = 200;
+    final int SELECT_PICTURE = 200;
     ImageView imageView;
     private ArrayList<Object> bitmaps;
     byte [] imageSources;
@@ -57,64 +58,70 @@ public class DetailsActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(i,"Select Picture"),SELECT_PICTURE);
     }
 
-    public void save(View view){
-        Image image = new Image();
-        image.setImage(ImageBitmapString.getStringFromBitmap(bitmap));
-        //image.setImage(ImageBitmapString.getStringFromBitmap(bitmap));
-        DatabaseProviderImg.getDbConnection(getApplicationContext()).imageDao().insertImage(image);
-    }
 
     public void getImage(View view){
+        Image image = new Image();
+        image.setImage(ImageBitmapString.getStringFromBitmap(bitmap));
+        DatabaseProviderImg.getDbConnection(getApplicationContext()).imageDao().insertImage(image);
         startActivity(new Intent(DetailsActivity.this,ImageRecycler.class));
     }
 
 
-//    private void getImages()
-//    {
-//        mImageUrls.add("https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aHVtYW58ZW58MHx8MHx8&w=1000&q=80");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        mImageUrls.add("https://media.istockphoto.com/photos/panorama-of-dubai-marina-in-uae-modern-skyscrapers-and-port-with-picture-id1266923176?b=1&k=20&m=1266923176&s=170667a&w=0&h=BAcB2chj9gQJystJETo24W2MAZZSe03NW5b0f-475D0=");
-//        initRecyclerView();
-//    }
+    private void initRecyclerView()
+    {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(layoutManager);
+        ImageRecycleviewAdapter adapter = new ImageRecycleviewAdapter(this,bitmaps);
+        recyclerView.setAdapter(adapter);
+    }
 
-//    private void initRecyclerView()
-//    {
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-//        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-//        recyclerView.setLayoutManager(layoutManager);
-//        ImageRecycleviewAdapter adapter = new ImageRecycleviewAdapter(this,mImageUrls);
-//        recyclerView.setAdapter(adapter);
-//    }
-
-//    public void viewImage(View view) {
-//        Intent intent = new Intent(DetailsActivity.this,)
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        if(intent.resolveActivity(getPackageManager())!= null) {
-//            //startActivityForResult(intent,CAMERA_INTENT);
-//        }
-//    }
+    public void takePicture(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager())!= null) {
+            startActivityForResult(intent,CAMERA_INTENT);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if (requestCode == SELECT_PICTURE){
-                Uri selectedImageRri = data.getData();
-                if(null != selectedImageRri){
-                    imageView.setImageURI(selectedImageRri);
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),selectedImageRri);
-                        imageView.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+        switch (requestCode){
+            case SELECT_PICTURE:
+
+                if(resultCode == RESULT_OK){
+                    if (requestCode == SELECT_PICTURE){
+                        Uri selectedImageRri = data.getData();
+                        if(null != selectedImageRri){
+                            imageView.setImageURI(selectedImageRri);
+                            try {
+                                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),selectedImageRri);
+                                imageView.setImageBitmap(bitmap);
+                                initRecyclerView();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
-            }
+
+                break;
+
+            case CAMERA_INTENT:
+               if(requestCode == Activity.RESULT_OK){
+                    bitmap = (Bitmap) data.getExtras().get("data");
+                    if(bitmap!= null){
+                        imageView.setImageBitmap(bitmap);
+                        initRecyclerView();
+                    }
+                    else {
+                        Toast.makeText(this,"Bitmap is null",Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(this,"Result not ok",Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 }
