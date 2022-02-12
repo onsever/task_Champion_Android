@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                     return;
                 }
 
-                itemViewModel.insertItem(new Item(taskName, categoryId, false));
+//                itemViewModel.insertItem(new Item(taskName, categoryId, false));
 
                 dialog.dismiss();
             }
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClick(Category category, int selectedIndex) {
         System.out.println("Selected Index: " + selectedIndex);
-        System.out.println("Selected category name: " + category.getCategoryName());
+//        System.out.println("Selected category name: " + category.getCategoryName());
     }
 
     @Override

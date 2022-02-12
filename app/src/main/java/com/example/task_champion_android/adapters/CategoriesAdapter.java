@@ -53,9 +53,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, int position) {
         categoryClickListener.getCategoriesId(categories.get(0).getId());
-        binding.categoryName.setText(categories.get(position).getCategoryName());
+//        binding.categoryName.setText(categories.get(position).getCategoryName());
         binding.taskCounter.setText(String.format(context.getResources().getString(R.string.taskCounter), numberOfItems));
-        binding.itemCounter.setProgress(categories.get(position).getItemCounter());
+//        binding.itemCounter.setProgress(categories.get(position).getItemCounter());
         //binding.itemCounter.setMax(categories.get(position).getItems().size());
         binding.cardView.setOnClickListener(v -> {
             selectedIndex = holder.getAdapterPosition();

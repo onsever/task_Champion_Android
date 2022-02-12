@@ -39,7 +39,7 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     public void insertCategory(String categoryName) {
-        Category category = new Category(categoryName, 0);
+        Category category = new Category(categoryName;
         appDatabase.queryDao().insertCategory(category);
         getAllCategoryList();
     }
