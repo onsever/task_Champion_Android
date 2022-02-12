@@ -15,11 +15,17 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.ImageRecycleviewAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
@@ -46,7 +52,7 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        imageView = findViewById(R.id.image_view);
+
     }
 
     public void upload(View view){loadImageFromGallary();}
@@ -92,12 +98,35 @@ public class DetailsActivity extends AppCompatActivity {
 
                 if(resultCode == RESULT_OK){
                     if (requestCode == SELECT_PICTURE){
+                        Log.d("Read text",data.getData().toString());
                         Uri selectedImageRri = data.getData();
                         if(null != selectedImageRri){
-                            imageView.setImageURI(selectedImageRri);
+                            //imageView.setImageURI(selectedImageRri);
+                            Glide.with(this).asBitmap().load(data).listener(new RequestListener<Bitmap>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                    return true;
+                                }
+                            }).submit();
                             try {
                                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),selectedImageRri);
-                                imageView.setImageBitmap(bitmap);
+                                Glide.with(this).asBitmap().load(data).listener(new RequestListener<Bitmap>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                        return true;
+                                    }
+                                }).submit();
+//                                imageView.setImageBitmap(bitmap);
                                 initRecyclerView();
                             } catch (IOException e) {
                                 e.printStackTrace();

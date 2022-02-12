@@ -40,7 +40,6 @@ public class ImageRecycleviewAdapter extends RecyclerView.Adapter<ImageRecyclevi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
         Image image = (Image)arrayList.get(position);
         holder.image.setImageBitmap(ImageBitmapString.getBitMapFromStr(image.getImage()));
         image.setImage(image.getImage());
@@ -48,6 +47,7 @@ public class ImageRecycleviewAdapter extends RecyclerView.Adapter<ImageRecyclevi
 
     @Override
     public int getItemCount() {
+        arrayList = 
         return arrayList.size();
     }
 
