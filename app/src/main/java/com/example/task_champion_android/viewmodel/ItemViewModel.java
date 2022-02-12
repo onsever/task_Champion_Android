@@ -29,28 +29,28 @@ public class ItemViewModel extends AndroidViewModel {
     }
 
     public void getAllItemList(int categoryId) {
-        List<Item> itemList = appDatabase.queryDao().getAllItems(categoryId);
+//        List<Item> itemList = appDatabase.queryDao().getAllItems(categoryId);
 
-        if (itemList.size() > 0) {
-            items.postValue(itemList);
-        } else {
-            items.postValue(null);
-        }
+//        if (itemList.size() > 0) {
+//            items.postValue(itemList);
+//        } else {
+//            items.postValue(null);
+//        }
     }
 
     public void insertItem(Item item) {
         appDatabase.queryDao().insertItem(item);
-        getAllItemList(item.getCategoryId());
+//        getAllItemList(item.getCategoryId());
     }
 
     public void updateItem(Item item) {
         appDatabase.queryDao().updateItem(item);
-        getAllItemList(item.getCategoryId());
+//        getAllItemList(item.getCategoryId());
     }
 
     public void deleteItem(Item item) {
         appDatabase.queryDao().deleteItem(item);
-        getAllItemList(item.getCategoryId());
+//        getAllItemList(item.getCategoryId());
     }
 
     public void deleteAllItems() {

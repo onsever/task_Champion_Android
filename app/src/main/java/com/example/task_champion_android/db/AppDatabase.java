@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 @Database(
         entities = {
                 Category.class,
-                Item.class
+                Item.class,
+                MediaItem.class,
         },
         version = 1
 )
