@@ -29,17 +29,17 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     public void getAllCategoryList() {
-        List<Category> categoryList = appDatabase.queryDao().getAllCategories();
-
-        if (categoryList.size() > 0) {
-            categories.postValue(categoryList);
-        } else {
-            categories.postValue(null);
-        }
+//        List<Category> categoryList = appDatabase.queryDao().getAllCategories();
+//
+//        if (categoryList.size() > 0) {
+//            categories.postValue(categoryList);
+//        } else {
+//            categories.postValue(null);
+//        }
     }
 
     public void insertCategory(String categoryName) {
-        Category category = new Category(categoryName, 0);
+        Category category = new Category(categoryName;
         appDatabase.queryDao().insertCategory(category);
         getAllCategoryList();
     }
