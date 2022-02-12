@@ -29,13 +29,13 @@ public class ItemViewModel extends AndroidViewModel {
     }
 
     public void getAllItemList(int categoryId) {
-        List<Item> itemList = appDatabase.queryDao().getAllItems(categoryId);
+//        List<Item> itemList = appDatabase.queryDao().getAllItems(categoryId);
 
-        if (itemList.size() > 0) {
-            items.postValue(itemList);
-        } else {
-            items.postValue(null);
-        }
+//        if (itemList.size() > 0) {
+//            items.postValue(itemList);
+//        } else {
+//            items.postValue(null);
+//        }
     }
 
     public void insertItem(Item item) {

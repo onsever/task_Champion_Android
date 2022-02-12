@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey;
 
 public class Category {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @ColumnInfo(name = "name")
     private String name;
@@ -26,7 +26,7 @@ public class Category {
 
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -35,7 +35,7 @@ public class Category {
     }
 
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -12,14 +12,14 @@ public class ItemWithMedias {
             entityColumn = "item_id"
     )
 
-    public List<Media> mediaList;
+    public List<MediaItem> mediaItemList;
 
-    public ItemWithMedias(Item item, List<Media> mediaList){
+    public ItemWithMedias(Item item, List<MediaItem> mediaItemList){
         this.item = item;
-        this.mediaList = mediaList;
+        this.mediaItemList = mediaItemList;
     }
 
     public Item getItem() {return item;}
-    public List<Media> getMediaList() {return mediaList;}
-    public int getMediaListSize() {return mediaList == null ? 0 : mediaList.size();}
+    public List<MediaItem> getMediaList() {return mediaItemList;}
+    public int getMediaListSize() {return mediaItemList == null ? 0 : mediaItemList.size();}
 }

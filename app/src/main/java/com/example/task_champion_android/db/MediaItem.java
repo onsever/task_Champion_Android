@@ -12,14 +12,14 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(
-        tableName = "image_table",
+        tableName = "media_table",
         indices = {@Index("item_id")},
         foreignKeys = @ForeignKey(entity = Item.class,
         parentColumns = "id",
         childColumns = "item_id",
         onDelete = CASCADE)
 )
-public class Media {
+public class MediaItem {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name="id")
     private long id;
@@ -37,11 +37,11 @@ public class Media {
     private Type type;
 
     @Ignore
-    public Media() {
+    public MediaItem() {
 
     }
 
-    public Media(@NonNull String name, @NonNull String uri, @NonNull long itemId, @NonNull Type type){
+    public MediaItem(@NonNull String name, @NonNull String uri, @NonNull long itemId, @NonNull Type type){
         this.name = name;
         this.uri = uri;
         this.itemId = itemId;
