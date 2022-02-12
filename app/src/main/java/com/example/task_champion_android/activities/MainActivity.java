@@ -181,9 +181,14 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void getCategoriesId(int categoryId) {
         this.categoryId = categoryId;
+
         itemViewModel.getAllItemList(categoryId);
-        tasksAdapter.notifyDataSetChanged();
+
         System.out.println("Category ID" + this.categoryId);
+
+        for (int i = 0; i < itemViewModel.getTestItems(categoryId).size(); i++) {
+            System.out.println("Item " + itemViewModel.getTestItems(categoryId).get(i).getItemName());
+        }
     }
 
     @Override

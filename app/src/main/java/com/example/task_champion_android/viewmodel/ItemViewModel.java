@@ -57,4 +57,8 @@ public class ItemViewModel extends AndroidViewModel {
         appDatabase.queryDao().deleteAllItems();
     }
 
+    public List<Item> getTestItems(int categoryId) {
+        return appDatabase.queryDao().getAllItems(categoryId);
+    }
+
 }
