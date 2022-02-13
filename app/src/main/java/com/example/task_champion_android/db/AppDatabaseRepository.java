@@ -49,4 +49,16 @@ public class AppDatabaseRepository {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.deleteMediaItem(mediaItem));
     }
 
+    public void updateCategory(Category category) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            queryDao.updateCategory(category);
+        });
+    }
+
+    public void deleteCategory(Category category) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            queryDao.deleteCategory(category);
+        });
+    }
+
 }
