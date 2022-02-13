@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -20,7 +21,6 @@ import com.example.task_champion_android.adapters.TasksAdapter;
 import com.example.task_champion_android.databinding.ActivityMainBinding;
 import com.example.task_champion_android.db.Category;
 import com.example.task_champion_android.db.Item;
-import com.example.task_champion_android.viewmodel.ItemViewModel;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.util.List;
@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private EditText taskTextField;
 
     private CategoryViewModel categoryViewModel;
-    private ItemViewModel itemViewModel;
     private int categoryId;
 
     @Override
@@ -49,32 +48,14 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         configureButtonListeners();
 
         initViewModel();
-        categoryViewModel.getAllCategoryList();
-        itemViewModel.getAllItemList(categoryId);
 
     }
 
     private void initViewModel() {
-        categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
-        categoryViewModel.getCategoryList().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(List<Category> categories) {
-                if (categories == null) {
-                } else {
-                    categoriesAdapter.setCategories(categories);
-                }
-            }
-        });
+        categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
 
-        itemViewModel = new ViewModelProvider(this).get(ItemViewModel.class);
-        itemViewModel.getItemsList().observe(this, new Observer<List<Item>>() {
-            @Override
-            public void onChanged(List<Item> items) {
-                if (items == null) {
-                } else {
-                    tasksAdapter.setItems(items);
-                }
-            }
+        categoryViewModel.getCategories().observe(this, categories -> {
+            categoriesAdapter.setCategories(categories);
         });
 
     }
@@ -92,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.categoriesRecyclerView.setAdapter(categoriesAdapter);
         binding.categoriesRecyclerView.setLayoutManager(linearLayoutManager);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(binding.tasksRecyclerView);
-
     }
 
     private void hideStatusBar() {
@@ -103,31 +81,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-            int position = viewHolder.getAdapterPosition();
-            switch (direction) {
-                case ItemTouchHelper.LEFT:
-                    itemViewModel.deleteItem(itemViewModel.getItemsList().getValue().get(position));
-                    itemViewModel.getAllItemList(categoryId);
-                    break;
-
-                case ItemTouchHelper.RIGHT:
-//                    boolean isCompleted = !(categories.get(CategoriesAdapter.selectedIndex).getItems().get(position).isCompleted());
-//                    categories.get(CategoriesAdapter.selectedIndex).getItems().get(position).setCompleted(isCompleted);
-//                    tasksAdapter.notifyItemChanged(position);
-                    break;
-            }
-        }
-    };
-
     private void createAddTaskAlert() {
         taskTextField = new EditText(this);
         addNewTaskDialog = new AlertDialog.Builder(this);
@@ -135,27 +88,20 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         addNewTaskDialog.setMessage("Please enter the name of the task.");
         addNewTaskDialog.setView(taskTextField);
 
-        addNewTaskDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String taskName = taskTextField.getText().toString();
+        addNewTaskDialog.setPositiveButton("Add", (dialog, which) -> {
+            String taskName = taskTextField.getText().toString();
 
-                if (TextUtils.isEmpty(taskName)) {
-                    return;
-                }
-
-//                itemViewModel.insertItem(new Item(taskName, categoryId, false));
-
-                dialog.dismiss();
+            if (TextUtils.isEmpty(taskName)) {
+                return;
             }
+
+            Category category = new Category(taskName);
+            categoryViewModel.insertCategory(category);
+
+            dialog.dismiss();
         });
 
-        addNewTaskDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        addNewTaskDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         addNewTaskDialog.show();
     }
@@ -175,25 +121,17 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClick(Category category, int selectedIndex) {
         System.out.println("Selected Index: " + selectedIndex);
-//        System.out.println("Selected category name: " + category.getCategoryName());
     }
 
     @Override
-    public void getCategoriesId(int categoryId) {
-        this.categoryId = categoryId;
+    public void getCategoriesId(long categoryId) {
 
-        itemViewModel.getAllItemList(categoryId);
-
-        System.out.println("Category ID" + this.categoryId);
-
-        for (int i = 0; i < itemViewModel.getTestItems(categoryId).size(); i++) {
-            System.out.println("Item " + itemViewModel.getTestItems(categoryId).get(i).getItemName());
-        }
     }
 
     @Override
     public void onItemClickedOn(Item item) {
-
+        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        startActivity(intent);
     }
 
 }

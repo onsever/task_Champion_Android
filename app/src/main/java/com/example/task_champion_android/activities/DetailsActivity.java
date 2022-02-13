@@ -3,18 +3,18 @@ package com.example.task_champion_android.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
 
 import com.example.task_champion_android.R;
+import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
-import com.example.task_champion_android.fragments.BlankFragment1;
-import com.example.task_champion_android.fragments.BlankFragment2;
-import com.example.task_champion_android.fragments.BlankFragment3;
 
 public class DetailsActivity extends AppCompatActivity {
 
     private ActivityDetailsBinding binding;
+    private TaskImageAdapter taskImageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,19 +22,18 @@ public class DetailsActivity extends AppCompatActivity {
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BlankFragment1 frg=new BlankFragment1();
-        BlankFragment2 frg1=new BlankFragment2();
-        BlankFragment3 frg2=new BlankFragment3();
+        configureAdapters();
 
-        FragmentManager manager=getSupportFragmentManager();
+        binding.taskName.setText("Meeting with Mark");
+    }
 
-        FragmentTransaction transaction=manager.beginTransaction();
+    private void configureAdapters() {
 
-        transaction.add(R.id.My_Container_1_ID, frg, "Frag_Top_tag");
-        transaction.add(R.id.My_Container_2_ID, frg1, "Frag_Middle_tag");
-        transaction.add(R.id.My_Container_3_ID, frg2, "Frag_Bottom_tag");
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
+        taskImageAdapter = new TaskImageAdapter(this);
+        binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+        binding.taskImagesRecyclerView.setLayoutManager(linearLayoutManager);
 
-        transaction.commit();
     }
 }
