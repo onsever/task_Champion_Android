@@ -1,34 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    tools:context=".activities.DetailsActivity"
-    android:background="@color/black">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/crystalWhite">
 
-    <FrameLayout
-        android:id="@+id/My_Container_1_ID"
-        android:layout_width="fill_parent"
-        android:layout_height="150dp"
-        android:background="@color/teal_200">
-    </FrameLayout>
+    <TextView
+        android:id="@+id/task_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Created at: 1/28:22"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_margin="10dp"/>
 
-    <FrameLayout
-        android:id="@+id/My_Container_2_ID"
-        android:layout_width="fill_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/My_Container_1_ID"
-        android:background="@color/teal_700" >
-    </FrameLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
-    <FrameLayout
-        android:id="@+id/My_Container_3_ID"
-        android:layout_width="fill_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/My_Container_2_ID"
-        android:background="@color/teal_200" >
-    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="20dp">
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task name: "
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:boxStrokeWidth="0dp"
+            app:boxBackgroundColor="@color/cyan"
+            android:textColorHint="@color/white"
+            android:layout_marginHorizontal="15dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/task_name"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:maxLines="1"/>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category: "
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_gravity="center"/>
+
+        <Spinner
+            android:id="@+id/categoriesSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="15dp"/>
+
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxStrokeWidth="0dp"
+        android:textColorHint="@color/black"
+        app:boxBackgroundColor="@color/white"
+        android:hint="Edit your task name"
+        android:layout_marginHorizontal="15dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/task_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start"/>
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task images: "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_margin="20dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskImagesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:clipChildren="false"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task audios: "
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_margin="20dp"/>
+
+    <ListView
+        android:id="@+id/taskAudiosListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"/>
+
+
+</LinearLayout>

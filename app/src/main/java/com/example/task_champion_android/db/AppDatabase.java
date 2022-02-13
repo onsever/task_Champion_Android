@@ -15,7 +15,8 @@ import java.util.concurrent.Executors;
                 Item.class,
                 MediaItem.class,
         },
-        version = 1
+        version = 1,
+        exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
 
