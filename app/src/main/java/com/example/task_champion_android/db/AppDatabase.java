@@ -2,9 +2,11 @@ package com.example.task_champion_android.db;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,11 +32,33 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "app_database").allowMainThreadQueries().build();
+                    INSTANCE = Room.databaseBuilder(
+                            context.getApplicationContext(),
+                            AppDatabase.class,
+                            "app_database")
+                            .allowMainThreadQueries()
+                            .addCallback(callback)
+                            .build();
                 }
             }
         }
 
         return INSTANCE;
     }
+
+    private static final RoomDatabase.Callback callback =
+            new RoomDatabase.Callback() {
+                @Override
+                public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                    super.onCreate(db);
+
+                    databaseWriteExecutor.execute(() -> {
+                        Category cat = new Category("School");
+                        Item item = new Item("assignment 1", 1, "do some stuff", false, "2022-02-11 12:00:00");
+                        QueryDao dao = INSTANCE.queryDao();
+                        dao.insertCategory(cat);
+                        dao.insertItem(item);
+                    });
+                }
+            };
 }

@@ -24,6 +24,7 @@ public class AppDatabaseRepository {
     public LiveData<List<Category>> getCategories() {return categories;}
     public LiveData<List<CategoryWithItems>> getItems() {return items;}
     public LiveData<List<ItemWithMedias>> getMediaItems() {return mediaItems;}
+    public LiveData<List<Item>> getItemInCategory(long catID) {return queryDao.getAllItems(catID);}
 
     public void insertCategory(Category category) {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertCategory(category));

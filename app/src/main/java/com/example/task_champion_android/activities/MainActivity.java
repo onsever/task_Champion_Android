@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private EditText taskTextField;
 
     private CategoryViewModel categoryViewModel;
-    private int categoryId;
+    private int selectedIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,12 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
         categoryViewModel.getCategories().observe(this, categories -> {
             categoriesAdapter.setCategories(categories);
+            Long catID = categories.get(categoriesAdapter.selectedIndex).getId();
+            categoryViewModel.getItemInCategory(catID).observe(this, items -> {
+                tasksAdapter.setItems(items);
+            });
         });
+
 
     }
 
@@ -120,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     @Override
     public void onItemClick(Category category, int selectedIndex) {
+        this.selectedIndex = selectedIndex;
         System.out.println("Selected Index: " + selectedIndex);
     }
 
