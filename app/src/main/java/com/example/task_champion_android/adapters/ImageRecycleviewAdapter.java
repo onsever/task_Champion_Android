@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.db.Image;
 import com.example.task_champion_android.supportClass.ImageBitmapString;
+import com.example.task_champion_android.viewmodel.ItemViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ImageRecycleviewAdapter extends RecyclerView.Adapter<ImageRecycleviewAdapter.ViewHolder>{
 
-    List arrayList;
+    List<ItemViewModel> arrayList;
     Context context;
 
     public ImageRecycleviewAdapter(Context context ,List arrayList) {
@@ -31,32 +32,29 @@ public class ImageRecycleviewAdapter extends RecyclerView.Adapter<ImageRecyclevi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_recycleview,parent,false);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Image image = (Image)arrayList.get(position);
-        holder.image.setImageBitmap(ImageBitmapString.getBitMapFromStr(image.getImage()));
-        image.setImage(image.getImage());
+        Glide.with(context).load(arrayList.get(position).getImageUrl()).into(holder.imageView);
+
+//        Image image = (Image)arrayList.get(position);
+//        holder.image.setImageBitmap(ImageBitmapString.getBitMapFromStr(image.getImage()));
+//        image.setImage(image.getImage());
     }
 
     @Override
     public int getItemCount() {
-        arrayList = 
         return arrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        CircleImageView image;
-
+        CircleImageView imageView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.image_view);
+            imageView = itemView.findViewById(R.id.image_view);
         }
     }
 

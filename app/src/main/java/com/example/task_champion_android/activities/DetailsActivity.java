@@ -44,6 +44,8 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView imageView;
     private ArrayList<Object> bitmaps;
     byte [] imageSources;
+    RecyclerView recyclerView;
+    private Uri imageuri;
 
     final int CAMERA_INTENT = 51;
     ActivityResultLauncher<Intent> activityResultLauncher;
