@@ -47,8 +47,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 @Override
                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                     super.onCreate(db);
-
-                    databaseWriteExecutor.execute(() -> {
+                       databaseWriteExecutor.execute(() -> {
                         QueryDao queryDao = INSTANCE.queryDao();
                         Category category1 = new Category("Home");
                         long catId1 = queryDao.insertCategory(category1);
@@ -60,6 +59,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         queryDao.insertMediaItem(mediaItem2);
                         Category category2 = new Category("Business");
                          queryDao.insertCategory(category2);
+                    });
                     });
                 }
             };

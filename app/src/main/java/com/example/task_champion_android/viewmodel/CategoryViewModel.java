@@ -52,8 +52,16 @@ public class CategoryViewModel extends AndroidViewModel {
         repository.insertItem(category, item);
     }
 
+
+    public void deleteItem(Item item) {
+        repository.deleteItem(item);
+    }
+
+    public void insertMediaItem(Category category, Item item, MediaItem mediaItem) {
+        repository.insertMediaItem(category, item, mediaItem);
+      
     public void insertMediaItem( MediaItem mediaItem) {
-        repository.insertMediaItem(mediaItem);
+
     }
 
     public void updateItem(Category category, Item item) {
