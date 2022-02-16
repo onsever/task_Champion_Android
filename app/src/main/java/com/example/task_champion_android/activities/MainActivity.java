@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
 //            Category category = new Category(taskName);
 //            categoryViewModel.insertCategory(category);
-//            Item item = new Item(taskName, categoryId, "", false, "");
-//            categoryViewModel.insertItemToCategory(category, item);
+            Item item = new Item(taskName, categoryId, "", "");
+            categoryViewModel.insertItemToCategory(category, item);
 
             dialog.dismiss();
         });
