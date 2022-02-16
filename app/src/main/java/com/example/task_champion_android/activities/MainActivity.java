@@ -26,6 +26,12 @@ import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.util.List;
 
+/*
+Swiping Action to delete and make item complete
+Sort by Task & Date
+SearcHView
+ */
+
 public class MainActivity extends AppCompatActivity implements CategoriesAdapter.CategoryClickListener, TasksAdapter.ItemClickListener {
 
     private ActivityMainBinding binding;
@@ -122,6 +128,11 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         });
 
         binding.addTaskButton.setOnClickListener(v -> createAddTaskAlert());
+
+        binding.moveToCategories.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CategoriesActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
