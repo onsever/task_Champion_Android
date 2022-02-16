@@ -107,6 +107,7 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
         addNewTaskDialog.setTitle("Update the Category");
         addNewTaskDialog.setMessage("Please enter the name of the task.");
         addNewTaskDialog.setView(taskTextField);
+        taskTextField.setText(category.getName());
 
         addNewTaskDialog.setPositiveButton("Update", (dialog, i) -> {
             String catName = taskTextField.getText().toString();
@@ -117,6 +118,7 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
 
 
             Category category1 = new Category(catName);
+            category1.setId(category.getId());
             categoryViewModel.updateCategory(category1);
 
             dialog.dismiss();
