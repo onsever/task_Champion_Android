@@ -46,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private Category category;
     private int seletedIndex = 0;
 
+    private static final String ITEM_ID = "itemId";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClickedOn(Item item) {
         Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        intent.putExtra(ITEM_ID, String.valueOf(item.getId()));
         startActivity(intent);
     }
 

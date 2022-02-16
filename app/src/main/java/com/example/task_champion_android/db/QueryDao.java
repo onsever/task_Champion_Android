@@ -45,6 +45,8 @@ public abstract class QueryDao {
     @Query("SELECT * FROM item_table")
     public abstract LiveData<List<ItemWithMedias>> getItemWithMedias();
 
+    @Query("SELECT * FROM item_table WHERE id = :itemId")
+    public abstract LiveData<Item> getSelectedItem (long itemId);
 
 
     @Query("SELECT * FROM item_table WHERE category_id = :categoryId")

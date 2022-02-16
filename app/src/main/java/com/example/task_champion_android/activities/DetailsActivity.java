@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
@@ -34,6 +35,8 @@ import com.example.task_champion_android.AudioItemsAdapter;
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
+import com.example.task_champion_android.db.Item;
+import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,11 +55,17 @@ public class DetailsActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private String filePath = "";
 
+    private Item selectedItem;
+
+    private long itemId;
+
     private final int REQUEST_PERMISSION_CODE = 1;
 
     private AudioItemsAdapter audioItemsAdapter;
 
     ActivityResultLauncher<Intent> activityResultLauncher;
+
+    private CategoryViewModel categoryViewModel;
 
 
 
@@ -66,7 +75,20 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
+
+        categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
+
+
         setContentView(binding.getRoot());
+
+        Intent intent = getIntent();
+        String _item = intent.getStringExtra("itemId");
+        itemId = Long.parseLong(_item);
+
+        categoryViewModel.getSelectedItem(itemId).observe(this, item -> {
+            selectedItem = item;
+        });
+
         // Create dummy data
         itemList.add(new AudioItem("1",Uri.parse("/1/111/")));
         itemList.add(new AudioItem("2",Uri.parse("/1/222/")));
@@ -93,12 +115,7 @@ public class DetailsActivity extends AppCompatActivity {
                 startRecording();
             }
         });
-        binding.playAudio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopRecording();
-            }
-        });
+
         binding.importAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,8 +228,6 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         configureAdapters();
-
-        binding.taskName.setText("Meeting with Mark");
     }
 
     private void configureAdapters() {

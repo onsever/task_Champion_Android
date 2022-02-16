@@ -24,10 +24,8 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public CategoryViewModel(@NonNull Application application) {
         super(application);
-
         repository = new AppDatabaseRepository(application);
         categories = repository.getCategories();
-
     }
 
     public LiveData<List<Category>> getCategories() {
@@ -37,6 +35,8 @@ public class CategoryViewModel extends AndroidViewModel {
     public LiveData<List<CategoryWithItems>> getCategoryWithItems() {
         return repository.getItems();
     }
+
+    public LiveData<Item> getSelectedItem(long id) { return repository.getSelectedItem(id); }
 
     public void insertItemToCategory(Category category, Item item) {
         repository.insertItem(category, item);

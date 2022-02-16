@@ -11,6 +11,7 @@ public class AppDatabaseRepository {
     private QueryDao queryDao;
     private LiveData<List<Category>> categories;
     private LiveData<List<CategoryWithItems>> items;
+    private LiveData<Item> selectedItem;
     private LiveData<List<ItemWithMedias>> mediaItems;
 
     public AppDatabaseRepository(Application application) {
@@ -23,6 +24,9 @@ public class AppDatabaseRepository {
 
     public LiveData<List<Category>> getCategories() {return categories;}
     public LiveData<List<CategoryWithItems>> getItems() {return items;}
+
+    public LiveData<Item> getSelectedItem(long id) { return queryDao.getSelectedItem(id);}
+
     public LiveData<List<ItemWithMedias>> getMediaItems() {return mediaItems;}
 
     public void insertCategory(Category category) {
