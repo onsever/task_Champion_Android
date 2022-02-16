@@ -13,8 +13,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.task_champion_android.adapters.CategoriesAdapter;
 import com.example.task_champion_android.adapters.TasksAdapter;
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
+        configureSearchBarListeners();
 
         initViewModel();
 
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         categoryViewModel.getCategoryWithItems().observe(this, categoryWithItems -> {
             categoriesAdapter.setCategories(categoryWithItems);
         });
+
 
     }
 
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
 //            Category category = new Category(taskName);
 //            categoryViewModel.insertCategory(category);
-            Item item = new Item(taskName, categoryId, "", false);
+            Item item = new Item(taskName, categoryId, "", false, "");
             categoryViewModel.insertItemToCategory(category, item);
 
             dialog.dismiss();
@@ -135,6 +140,42 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.moveToCategories.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategoriesActivity.class);
             startActivity(intent);
+        });
+    }
+
+    private void configureSearchBarListeners() {
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                categoryViewModel.searchItemByName(categoryId, query).observe(MainActivity.this, itemList ->{
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                    if (itemList.isEmpty()){
+                        Toast.makeText(getApplicationContext(),
+                                "No records found",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        binding.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                categoryViewModel.searchItemByCatID(categoryId).observe(MainActivity.this, itemList -> {
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                });
+                return false;
+            }
         });
     }
 
