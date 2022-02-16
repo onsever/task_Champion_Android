@@ -45,7 +45,8 @@ public abstract class QueryDao {
     @Query("SELECT * FROM item_table")
     public abstract LiveData<List<ItemWithMedias>> getItemWithMedias();
 
-
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId and LOWER(name) LIKE '%' || LOWER(:name) || '%'")
+    public abstract LiveData<List<Item>> searchItemByName(long categoryId, String name);
 
     @Query("SELECT * FROM item_table WHERE category_id = :categoryId")
     public abstract LiveData<List<Item>> getAllItems(long categoryId);
@@ -64,7 +65,7 @@ public abstract class QueryDao {
 
     @Transaction
     public void insertItem(Category category, Item item) {
-        final long catId = insertCategory(category);
+        final long catId = category.getId();
         item.setCategoryId(catId);
         insertItem(item);
     }

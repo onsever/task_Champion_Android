@@ -16,11 +16,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.task_champion_android.adapters.CategoriesAdapter;
 import com.example.task_champion_android.adapters.TasksAdapter;
 import com.example.task_champion_android.databinding.ActivityMainBinding;
 import com.example.task_champion_android.db.Category;
+import com.example.task_champion_android.db.CategoryWithItems;
 import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
@@ -36,7 +39,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private EditText taskTextField;
 
     private CategoryViewModel categoryViewModel;
-    private int selectedIndex;
+    private long categoryId;
+    private Category category;
+    private int seletedIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +52,18 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
+        configureSearchBarListeners();
 
         initViewModel();
+
 
     }
 
     private void initViewModel() {
         categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
 
-        categoryViewModel.getCategories().observe(this, categories -> {
-            categoriesAdapter.setCategories(categories);
-            Long catID = categories.get(categoriesAdapter.selectedIndex).getId();
-            categoryViewModel.getItemInCategory(catID).observe(this, items -> {
-                tasksAdapter.setItems(items);
-            });
+        categoryViewModel.getCategoryWithItems().observe(this, categoryWithItems -> {
+            categoriesAdapter.setCategories(categoryWithItems);
         });
 
 
@@ -101,8 +104,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                 return;
             }
 
-            Category category = new Category(taskName);
-            categoryViewModel.insertCategory(category);
+//            Category category = new Category(taskName);
+//            categoryViewModel.insertCategory(category);
+            Item item = new Item(taskName, categoryId, "", false, "");
+            categoryViewModel.insertItemToCategory(category, item);
 
             dialog.dismiss();
         });
@@ -124,15 +129,56 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.addTaskButton.setOnClickListener(v -> createAddTaskAlert());
     }
 
+    private void configureSearchBarListeners() {
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                categoryViewModel.searchItemByName(categoryId, query).observe(MainActivity.this, itemList ->{
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                    if (itemList.isEmpty()){
+                        Toast.makeText(getApplicationContext(),
+                                "No records found",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        binding.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                categoryViewModel.searchItemByCatID(categoryId).observe(MainActivity.this, itemList -> {
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                });
+                return false;
+            }
+        });
+    }
+
     @Override
-    public void onItemClick(Category category, int selectedIndex) {
-        this.selectedIndex = selectedIndex;
+    public void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems) {
         System.out.println("Selected Index: " + selectedIndex);
+        this.category = category;
+        this.seletedIndex = selectedIndex;
+
+        TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, this);
+        binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+        newTaskAdapter.setItems(categoryWithItems.getItemList());
     }
 
     @Override
     public void getCategoriesId(long categoryId) {
-
+        this.categoryId = categoryId;
     }
 
     @Override
