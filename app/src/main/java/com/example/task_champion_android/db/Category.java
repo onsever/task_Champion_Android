@@ -2,43 +2,45 @@ package com.example.task_champion_android.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "category_table")
+
+
 public class Category {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
-    @ColumnInfo(name = "categoryName")
-    private String categoryName;
-    private int itemCounter;
+    @ColumnInfo(name = "name")
+    private String name;
 
-    public Category(String categoryName, int itemCounter) {
-        this.categoryName = categoryName;
-        this.itemCounter = itemCounter;
+    @Ignore
+    public Category () {
+
     }
 
-    public int getId() {
+    public Category(String name) {
+        this.name = name;
+    }
+
+
+
+    public long getId() {
         return id;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getName() {
+        return name;
     }
 
-    public int getItemCounter() {
-        return itemCounter;
-    }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryName(String name) {
+        this.name = name;
     }
 
-    public void setItemCounter(int itemCounter) {
-        this.itemCounter = itemCounter;
-    }
 }

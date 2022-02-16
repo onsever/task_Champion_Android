@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.databinding.CategoriesRowBinding;
 import com.example.task_champion_android.db.Category;
+import com.example.task_champion_android.db.CategoryWithItems;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     Context context;
     CategoriesRowBinding binding;
     public static int selectedIndex = 0;
-    private List<Category> categories;
+    private List<CategoryWithItems> categories;
     private CategoryClickListener categoryClickListener;
 
     private int numberOfItems;
@@ -28,7 +29,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         this.categoryClickListener = categoryClickListener;
     }
 
-    public void setCategories(List<Category> categories) {
+    public void setCategories(List<CategoryWithItems> categories) {
         this.categories = categories;
         notifyDataSetChanged();
     }
@@ -52,15 +53,14 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, int position) {
-        categoryClickListener.getCategoriesId(categories.get(0).getId());
-        binding.categoryName.setText(categories.get(position).getCategoryName());
-        binding.taskCounter.setText(String.format(context.getResources().getString(R.string.taskCounter), numberOfItems));
-        binding.itemCounter.setProgress(categories.get(position).getItemCounter());
-        //binding.itemCounter.setMax(categories.get(position).getItems().size());
+        categoryClickListener.getCategoriesId(categories.get(0).getCategory().getId());
+        categoryClickListener.onItemClick(categories.get(0).getCategory(), holder.getAdapterPosition(), categories.get(0));
+        binding.categoryName.setText(categories.get(position).getCategory().getName());
+        binding.taskCounter.setText(String.format(context.getResources().getString(R.string.taskCounter), categories.get(position).getItemListSize()));
         binding.cardView.setOnClickListener(v -> {
             selectedIndex = holder.getAdapterPosition();
-            categoryClickListener.onItemClick(categories.get(selectedIndex), selectedIndex);
-            categoryClickListener.getCategoriesId(categories.get(selectedIndex).getId());
+            categoryClickListener.onItemClick(categories.get(selectedIndex).getCategory(), selectedIndex, categories.get(position));
+            categoryClickListener.getCategoriesId(categories.get(selectedIndex).getCategory().getId());
         });
 
     }
@@ -73,8 +73,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     }
 
     public interface CategoryClickListener {
-        void onItemClick(Category category, int selectedIndex);
-        void getCategoriesId(int categoryId);
+        void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems);
+        void getCategoriesId(long categoryId);
     }
 
 }

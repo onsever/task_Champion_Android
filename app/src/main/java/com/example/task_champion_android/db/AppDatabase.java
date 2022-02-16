@@ -12,9 +12,11 @@ import java.util.concurrent.Executors;
 @Database(
         entities = {
                 Category.class,
-                Item.class
+                Item.class,
+                MediaItem.class,
         },
-        version = 1
+        version = 1,
+        exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
 
