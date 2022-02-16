@@ -8,13 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,36 +21,34 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.task_champion_android.AudioItem;
-import com.example.task_champion_android.AudioItemsAdapter;
-import com.example.task_champion_android.R;
+import com.example.task_champion_android.adapters.AudioItemsAdapter;
 import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
 import com.example.task_champion_android.db.Item;
+import com.example.task_champion_android.db.MediaItem;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private final ArrayList<AudioItem> itemList = new ArrayList<>();
+    private List<MediaItem> itemList;
     private ActivityDetailsBinding binding;
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
     private AudioManager audioManager;
     private String filePath = "";
+
+    private Boolean isRecording = false;
+    private Boolean isPlayer = false;
 
     private Item selectedItem;
 
@@ -75,44 +70,41 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
-
         categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
-
-
         setContentView(binding.getRoot());
-
         Intent intent = getIntent();
         String _item = intent.getStringExtra("itemId");
         itemId = Long.parseLong(_item);
-
         categoryViewModel.getSelectedItem(itemId).observe(this, item -> {
             selectedItem = item;
+            long itemId = selectedItem.getId();
+            categoryViewModel.getMediaByItemId(itemId).observe(this, mediaItems -> {
+                itemList = mediaItems;
+                audioItemsAdapter = new AudioItemsAdapter(this, itemList);
+                binding.audioRecyclerView.setAdapter(audioItemsAdapter);
+            });
         });
-
-        // Create dummy data
-        itemList.add(new AudioItem("1",Uri.parse("/1/111/")));
-        itemList.add(new AudioItem("2",Uri.parse("/1/222/")));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        audioItemsAdapter = new AudioItemsAdapter(this, itemList);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
-        binding.audioRecyclerView.setAdapter(audioItemsAdapter);
-
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if(result.getResultCode() == RESULT_OK && result.getData() != null){
-                    Intent data = result.getData();
-                    Uri fileUri = data.getData();
-                    addNewAudioFile(fileUri);
-                    Log.d("detailsActivity", "imported file path: " + fileUri);
-//                    playAudio(fileUri);
+                    Intent intent = result.getData();
+                    Uri fileUri = intent.getData();
+                    Log.d("detailsActivity", String.valueOf(fileUri.getPath()));
+                    //TODO - need to found solution to get absolute path;
                 }
             }
         });
         binding.recordAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startRecording();
+                    if (!isRecording) {
+                        startRecording();
+                    } else {
+                        stopRecording();
+                    }
             }
         });
 
@@ -127,10 +119,6 @@ public class DetailsActivity extends AppCompatActivity {
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                 ,0);
 
-        // Check permission
-        if(!checkDevicePermission()){
-            requestPermission();
-        }
     }
 
     private void importAudio() {
@@ -144,29 +132,49 @@ public class DetailsActivity extends AppCompatActivity {
         if (!filePath.isEmpty()) {
             mediaRecorder.stop();
             mediaRecorder = null;
-            Uri uri = Uri.parse(filePath);
-            addNewAudioFile(uri);
+            addNewAudioFile(filePath);
             filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
+            isRecording = false;
+            binding.recordAudio.setText("STOP");
         }
     }
 
-    private void addNewAudioFile(Uri filePath) {
+    public void removeAudioFile(MediaItem mediaItem) {
+        categoryViewModel.deleteMediaItem(mediaItem);
+    }
+
+    public void playAudioFile(MediaItem mediaItem) {
+        playAudio(mediaItem.getUri());
+    }
+
+
+
+    private void addNewAudioFile(String filePath) {
         String name = String.valueOf(itemList.size()+1);
-        AudioItem newItem = new AudioItem(name,filePath);
-        itemList.add(newItem);
+        MediaItem item = new MediaItem();
+        item.setName(name);
+        item.setUri(filePath);
+        item.setItemId(selectedItem.getId());
+        item.setType(MediaItem.Type.AUDIO);
+        categoryViewModel.insertMediaItem(item);
         audioItemsAdapter.updateItems();
     }
 
 
     private void startRecording() {
         if(checkDevicePermission()){
-            filePath = getExternalCacheDir().getAbsolutePath() + UUID.randomUUID().toString();
+            //TODO audio store path need to find solution;
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
+                    .getPath() + "/";
+            filePath = path + UUID.randomUUID() +".mp3";
             setUpRecorder();
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
                 Toast.makeText(this, "start recording", Toast.LENGTH_LONG).show();
+                isRecording = true;
+                binding.recordAudio.setText("STOP");
             }catch (IllegalStateException | IOException ise) {
                 ise.printStackTrace();
             }
@@ -175,7 +183,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void playAudio (Uri path) {
+    private void playAudio (String path) {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes(
                 new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -183,7 +191,8 @@ public class DetailsActivity extends AppCompatActivity {
                 .build()
         );
         try{
-            mediaPlayer.setDataSource(getApplicationContext(), path);
+
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(new File(path)));
             mediaPlayer.prepare();
             mediaPlayer.start();
         }catch (IOException e) {
@@ -231,9 +240,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void configureAdapters() {
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-
         taskImageAdapter = new TaskImageAdapter(this);
         binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
         binding.taskImagesRecyclerView.setLayoutManager(linearLayoutManager);

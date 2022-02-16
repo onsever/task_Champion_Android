@@ -27,15 +27,6 @@ public abstract class QueryDao {
     public abstract void deleteMediaItem(MediaItem mediaItem);
 
     @Transaction
-    public void insertMediaItem(Category category, Item item, MediaItem mediaItem){
-        final long catId = insertCategory(category);
-        item.setCategoryId(catId);
-        final long item_id = insertItem(item);
-        mediaItem.setItemId(item_id);
-        insertMediaItem(mediaItem);
-    }
-
-    @Transaction
     public void updateMediaItem(Category category, Item item, MediaItem mediaItem){
         updateItem(category,item);
         updateMediaItem(mediaItem);
