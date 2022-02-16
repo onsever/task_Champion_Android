@@ -26,6 +26,9 @@ public abstract class QueryDao {
     @Delete
     public abstract void deleteMediaItem(MediaItem mediaItem);
 
+    @Query("DELETE FROM category_table")
+    public abstract void deleteAll();
+
     @Transaction
     public void insertMediaItem(Category category, Item item, MediaItem mediaItem){
         final long catId = insertCategory(category);
@@ -44,8 +47,6 @@ public abstract class QueryDao {
     @Transaction
     @Query("SELECT * FROM item_table")
     public abstract LiveData<List<ItemWithMedias>> getItemWithMedias();
-
-
 
     @Query("SELECT * FROM item_table WHERE category_id = :categoryId")
     public abstract LiveData<List<Item>> getAllItems(long categoryId);
