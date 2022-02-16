@@ -11,6 +11,7 @@ public class AppDatabaseRepository {
     private QueryDao queryDao;
     private LiveData<List<Category>> categories;
     private LiveData<List<CategoryWithItems>> items;
+    private LiveData<Item> selectedItem;
     private LiveData<List<ItemWithMedias>> mediaItems;
 
     public AppDatabaseRepository(Application application) {
@@ -23,7 +24,16 @@ public class AppDatabaseRepository {
 
     public LiveData<List<Category>> getCategories() {return categories;}
     public LiveData<List<CategoryWithItems>> getItems() {return items;}
-    public LiveData<List<ItemWithMedias>> getMediaItems() {return mediaItems;}
+
+    public LiveData<Item> getSelectedItem(long id) { return queryDao.getSelectedItem(id);}
+
+    public LiveData<List<ItemWithMedias>> getAllMediaItems() {return mediaItems;}
+
+    public LiveData<List<MediaItem>> getMediasByItemId(long id) {return queryDao.getMediaItems(id);}
+
+    public LiveData<List<Item>> searchItemByName(long catID, String name) {return queryDao.searchItemByName(catID, name);}
+
+    public LiveData<List<Item>> searchItemByCatID(long catID) {return queryDao.getAllItems(catID);}
 
     public void insertCategory(Category category) {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertCategory(category));
@@ -33,6 +43,7 @@ public class AppDatabaseRepository {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertItem(category,item));
     }
 
+
     public void deleteItem(Item item) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             queryDao.deleteItem(item);
@@ -41,6 +52,10 @@ public class AppDatabaseRepository {
 
     public void insertMediaItem(Category category,Item item, MediaItem mediaItem) {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(category,item,mediaItem));
+
+    public void insertMediaItem(MediaItem mediaItem) {
+        AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(mediaItem));
+
     }
 
     public void updateItem(Category category, Item item) {

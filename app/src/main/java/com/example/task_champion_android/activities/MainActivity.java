@@ -19,6 +19,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.CategoriesAdapter;
@@ -54,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private SwipeHelper swipeHelper;
     private int seletedIndex = 0;
 
+    private static final String ITEM_ID = "itemId";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         configureAdapters();
         configureButtonListeners();
         swipeAction();
+        configureSearchBarListeners();
         initViewModel();
 
     }
@@ -74,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         categoryViewModel.getCategoryWithItems().observe(this, categoryWithItems -> {
             categoriesAdapter.setCategories(categoryWithItems);
         });
+
 
     }
 
@@ -134,7 +141,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                 return;
             }
 
-            Item item = new Item(taskName, categoryId, "", false);
+//            Category category = new Category(taskName);
+//            categoryViewModel.insertCategory(category);
+            Item item = new Item(taskName, categoryId, "", "");
             categoryViewModel.insertItemToCategory(category, item);
 
             dialog.dismiss();
@@ -162,6 +171,42 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         });
     }
 
+    private void configureSearchBarListeners() {
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                categoryViewModel.searchItemByName(categoryId, query).observe(MainActivity.this, itemList ->{
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                    if (itemList.isEmpty()){
+                        Toast.makeText(getApplicationContext(),
+                                "No records found",Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        binding.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                categoryViewModel.searchItemByCatID(categoryId).observe(MainActivity.this, itemList -> {
+                    TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                    binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+                    newTaskAdapter.setItems(itemList);
+                });
+                return false;
+            }
+        });
+    }
+
     @Override
     public void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems) {
         System.out.println("Selected Index: " + selectedIndex);
@@ -181,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClickedOn(Item item) {
         Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+        intent.putExtra(ITEM_ID, String.valueOf(item.getId()));
         startActivity(intent);
     }
 

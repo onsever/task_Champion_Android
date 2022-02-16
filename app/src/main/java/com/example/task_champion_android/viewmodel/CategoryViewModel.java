@@ -24,10 +24,8 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public CategoryViewModel(@NonNull Application application) {
         super(application);
-
         repository = new AppDatabaseRepository(application);
         categories = repository.getCategories();
-
     }
 
     public LiveData<List<Category>> getCategories() {
@@ -38,9 +36,22 @@ public class CategoryViewModel extends AndroidViewModel {
         return repository.getItems();
     }
 
+    public LiveData<List<MediaItem>> getMediaByItemId (long id) {return repository.getMediasByItemId(id);}
+
+    public LiveData<Item> getSelectedItem(long id) { return repository.getSelectedItem(id); }
+
+    public LiveData<List<Item>> searchItemByName(long catID, String name) {
+        return repository.searchItemByName(catID, name);
+    }
+
+    public LiveData<List<Item>> searchItemByCatID(long catId) {
+        return repository.searchItemByCatID(catId);
+    }
+
     public void insertItemToCategory(Category category, Item item) {
         repository.insertItem(category, item);
     }
+
 
     public void deleteItem(Item item) {
         repository.deleteItem(item);
@@ -48,6 +59,9 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public void insertMediaItem(Category category, Item item, MediaItem mediaItem) {
         repository.insertMediaItem(category, item, mediaItem);
+      
+    public void insertMediaItem( MediaItem mediaItem) {
+
     }
 
     public void updateItem(Category category, Item item) {

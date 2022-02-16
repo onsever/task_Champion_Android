@@ -30,15 +30,6 @@ public abstract class QueryDao {
     public abstract void deleteAll();
 
     @Transaction
-    public void insertMediaItem(Category category, Item item, MediaItem mediaItem){
-        final long catId = insertCategory(category);
-        item.setCategoryId(catId);
-        final long item_id = insertItem(item);
-        mediaItem.setItemId(item_id);
-        insertMediaItem(mediaItem);
-    }
-
-    @Transaction
     public void updateMediaItem(Category category, Item item, MediaItem mediaItem){
         updateItem(category,item);
         updateMediaItem(mediaItem);
@@ -47,6 +38,12 @@ public abstract class QueryDao {
     @Transaction
     @Query("SELECT * FROM item_table")
     public abstract LiveData<List<ItemWithMedias>> getItemWithMedias();
+
+    @Query("SELECT * FROM item_table WHERE id = :itemId")
+    public abstract LiveData<Item> getSelectedItem (long itemId);
+
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId and LOWER(name) LIKE '%' || LOWER(:name) || '%'")
+    public abstract LiveData<List<Item>> searchItemByName(long categoryId, String name);
 
     @Query("SELECT * FROM item_table WHERE category_id = :categoryId")
     public abstract LiveData<List<Item>> getAllItems(long categoryId);

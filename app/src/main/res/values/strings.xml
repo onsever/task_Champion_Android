@@ -5,6 +5,10 @@
     <string name="sortByTask">Sort by Task</string>
     <string name="sortByDate">Sort by Date</string>
     <string name="add_task">Add Task</string>
+    <string name="start_audio">Start Audio</string>
+    <string name="play">Play</string>
+    <string name="stop">stop</string>
+    <string name="importFile">import</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_blank_fragment1">hello_blank_fragment1</string>
