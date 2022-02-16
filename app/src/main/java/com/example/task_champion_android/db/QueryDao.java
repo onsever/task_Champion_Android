@@ -64,7 +64,7 @@ public abstract class QueryDao {
 
     @Transaction
     public void insertItem(Category category, Item item) {
-        final long catId = insertCategory(category);
+        final long catId = category.getId();
         item.setCategoryId(catId);
         insertItem(item);
     }

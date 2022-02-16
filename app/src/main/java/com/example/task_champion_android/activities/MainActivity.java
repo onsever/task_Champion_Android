@@ -20,6 +20,7 @@ import com.example.task_champion_android.adapters.CategoriesAdapter;
 import com.example.task_champion_android.adapters.TasksAdapter;
 import com.example.task_champion_android.databinding.ActivityMainBinding;
 import com.example.task_champion_android.db.Category;
+import com.example.task_champion_android.db.CategoryWithItems;
 import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private EditText taskTextField;
 
     private CategoryViewModel categoryViewModel;
-    private int categoryId;
+    private long categoryId;
+    private Category category;
+    private int seletedIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
         initViewModel();
 
+
     }
 
     private void initViewModel() {
         categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
 
-        categoryViewModel.getCategories().observe(this, categories -> {
-            categoriesAdapter.setCategories(categories);
+        categoryViewModel.getCategoryWithItems().observe(this, categoryWithItems -> {
+            categoriesAdapter.setCategories(categoryWithItems);
         });
 
     }
@@ -95,8 +99,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                 return;
             }
 
-            Category category = new Category(taskName);
-            categoryViewModel.insertCategory(category);
+//            Category category = new Category(taskName);
+//            categoryViewModel.insertCategory(category);
+            Item item = new Item(taskName, categoryId, "", false);
+            categoryViewModel.insertItemToCategory(category, item);
 
             dialog.dismiss();
         });
@@ -119,13 +125,19 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     }
 
     @Override
-    public void onItemClick(Category category, int selectedIndex) {
+    public void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems) {
         System.out.println("Selected Index: " + selectedIndex);
+        this.category = category;
+        this.seletedIndex = selectedIndex;
+
+        TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, this);
+        binding.tasksRecyclerView.setAdapter(newTaskAdapter);
+        newTaskAdapter.setItems(categoryWithItems.getItemList());
     }
 
     @Override
     public void getCategoriesId(long categoryId) {
-
+        this.categoryId = categoryId;
     }
 
     @Override
