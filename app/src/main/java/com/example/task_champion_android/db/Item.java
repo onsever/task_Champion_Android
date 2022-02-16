@@ -3,6 +3,7 @@ package com.example.task_champion_android.db;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.PrimaryKey;
 
 @Entity(tableName = "item_table")
 public class Item {
