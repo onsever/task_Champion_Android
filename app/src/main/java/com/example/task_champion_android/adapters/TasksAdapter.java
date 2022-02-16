@@ -48,8 +48,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-//        binding.taskName.setText(items.get(position).getItemName());
-        itemClickListener.onItemClickedOn(items.get(position));
+        binding.taskName.setText(items.get(position).getName());
+
+        binding.rowLayout.setOnClickListener(v -> {
+            itemClickListener.onItemClickedOn(items.get(position));
+        });
 
         if (items.get(position).isCompleted()) {
             binding.completedView.setBackground(context.getDrawable(R.drawable.completion_view));
