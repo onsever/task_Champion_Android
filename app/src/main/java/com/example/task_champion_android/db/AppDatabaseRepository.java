@@ -50,9 +50,6 @@ public class AppDatabaseRepository {
         });
     }
 
-    public void insertMediaItem(Category category,Item item, MediaItem mediaItem) {
-        AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(category,item,mediaItem));
-
     public void insertMediaItem(MediaItem mediaItem) {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(mediaItem));
 

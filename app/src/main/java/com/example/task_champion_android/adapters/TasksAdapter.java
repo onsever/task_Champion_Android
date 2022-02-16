@@ -1,23 +1,17 @@
 package com.example.task_champion_android.adapters;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.task_champion_android.R;
-import com.example.task_champion_android.activities.MainActivity;
 import com.example.task_champion_android.databinding.TasksRowBinding;
 import com.example.task_champion_android.db.Item;
 
 import java.util.List;
-
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHolder> {
 

@@ -30,18 +30,13 @@ import com.example.task_champion_android.db.Category;
 import com.example.task_champion_android.db.CategoryWithItems;
 import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.helper.SwipeHelper;
-import com.example.task_champion_android.helper.SwipeUnderlayButtonClickListener;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.util.List;
 
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-/*
-Swiping Action to delete and make item complete
-Sort by Task & Date
-SearcHView
- */
+
+
 
 public class MainActivity extends AppCompatActivity implements CategoriesAdapter.CategoryClickListener, TasksAdapter.ItemClickListener {
 
