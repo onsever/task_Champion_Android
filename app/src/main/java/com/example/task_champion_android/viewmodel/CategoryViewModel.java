@@ -38,6 +38,14 @@ public class CategoryViewModel extends AndroidViewModel {
         return repository.getItems();
     }
 
+    public LiveData<List<Item>> searchItemByCatID(Long catID) {
+        return repository.searchItemByCatID(catID);
+    }
+
+    public LiveData<List<Item>> searchItemByName(Long catID, String name) {
+        return repository.searchItemByName(catID, name);
+    }
+
     public void insertItemToCategory(Category category, Item item) {
         repository.insertItem(category, item);
     }
