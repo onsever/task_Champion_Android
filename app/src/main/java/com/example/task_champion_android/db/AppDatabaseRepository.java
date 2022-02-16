@@ -43,8 +43,19 @@ public class AppDatabaseRepository {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertItem(category,item));
     }
 
+
+    public void deleteItem(Item item) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            queryDao.deleteItem(item);
+        });
+    }
+
+    public void insertMediaItem(Category category,Item item, MediaItem mediaItem) {
+        AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(category,item,mediaItem));
+
     public void insertMediaItem(MediaItem mediaItem) {
         AppDatabase.databaseWriteExecutor.execute(()->queryDao.insertMediaItem(mediaItem));
+
     }
 
     public void updateItem(Category category, Item item) {

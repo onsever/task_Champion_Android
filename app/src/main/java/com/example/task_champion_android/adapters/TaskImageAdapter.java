@@ -29,7 +29,7 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        binding.taskImageView.setImageResource(R.drawable.ic_plus);
+        binding.taskImageView.setImageResource(R.drawable.ic_baseline_add_24);
     }
 
     @Override

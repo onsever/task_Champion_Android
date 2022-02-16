@@ -3,6 +3,7 @@ package com.example.task_champion_android.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,15 +22,20 @@ import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.CategoriesAdapter;
 import com.example.task_champion_android.adapters.TasksAdapter;
 import com.example.task_champion_android.databinding.ActivityMainBinding;
 import com.example.task_champion_android.db.Category;
 import com.example.task_champion_android.db.CategoryWithItems;
 import com.example.task_champion_android.db.Item;
+import com.example.task_champion_android.helper.SwipeHelper;
+import com.example.task_champion_android.helper.SwipeUnderlayButtonClickListener;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.util.List;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 /*
 Swiping Action to delete and make item complete
@@ -40,13 +48,12 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private ActivityMainBinding binding;
     private CategoriesAdapter categoriesAdapter;
     private TasksAdapter tasksAdapter;
-
     private AlertDialog.Builder addNewTaskDialog;
     private EditText taskTextField;
-
     private CategoryViewModel categoryViewModel;
     private long categoryId;
     private Category category;
+    private SwipeHelper swipeHelper;
     private int seletedIndex = 0;
 
     private static final String ITEM_ID = "itemId";
@@ -61,10 +68,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
+        swipeAction();
         configureSearchBarListeners();
-
         initViewModel();
-
 
     }
 
@@ -78,6 +84,28 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     }
 
+    private void swipeAction() {
+
+        swipeHelper = new SwipeHelper(this, 300, binding.tasksRecyclerView) {
+            @Override
+            protected void instantiateSwipeButton(RecyclerView.ViewHolder viewHolder, List<SwipeUnderlayButton> buffer) {
+
+                buffer.add(new SwipeUnderlayButton(MainActivity.this,
+                        "Delete",
+                        R.drawable.ic_baseline_delete_24,
+                        30,
+                        0,
+                        Color.parseColor("#ff3c30"),
+                        SwipeDirection.LEFT,
+                        position -> {
+                            Item item = tasksAdapter.getPosition(position);
+                            categoryViewModel.deleteItem(item);
+                        }));
+
+            }
+        };
+
+    }
 
     private void configureAdapters() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -185,9 +213,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         this.category = category;
         this.seletedIndex = selectedIndex;
 
-        TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, this);
-        binding.tasksRecyclerView.setAdapter(newTaskAdapter);
-        newTaskAdapter.setItems(categoryWithItems.getItemList());
+        tasksAdapter = new TasksAdapter(MainActivity.this, this);
+        binding.tasksRecyclerView.setAdapter(tasksAdapter);
+        tasksAdapter.setItems(categoryWithItems.getItemList());
     }
 
     @Override
