@@ -101,24 +101,23 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
         addNewTaskDialog.show();
     }
 
-    private void updateTaskAlert() {
+    private void updateTaskAlert(Category category) {
         taskTextField = new EditText(this);
         addNewTaskDialog = new AlertDialog.Builder(this);
-        addNewTaskDialog.setTitle("Add a new Task");
+        addNewTaskDialog.setTitle("Update the Category");
         addNewTaskDialog.setMessage("Please enter the name of the task.");
         addNewTaskDialog.setView(taskTextField);
 
-        addNewTaskDialog.setPositiveButton("Add", (dialog, i) -> {
-            String taskName = taskTextField.getText().toString();
+        addNewTaskDialog.setPositiveButton("Update", (dialog, i) -> {
+            String catName = taskTextField.getText().toString();
 
-            if (TextUtils.isEmpty(taskName)) {
+            if (TextUtils.isEmpty(catName)) {
                 return;
             }
 
-//            Category category = new Category(taskName);
-//            categoryViewModel.insertCategory(category);
-//            Item item = new Item(taskName, categoryId, "", false, "");
-//            categoryViewModel.insertItemToCategory(category, item);
+
+            Category category1 = new Category(catName);
+            categoryViewModel.updateCategory(category1);
 
             dialog.dismiss();
         });
@@ -132,6 +131,7 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
     @Override
     public void onItemUpdate(Category category, int selectedIndex) {
             categoryViewModel.updateCategory(category);
+        updateTaskAlert(category);
     }
 
     @Override
