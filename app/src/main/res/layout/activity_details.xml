@@ -127,7 +127,7 @@
         android:textStyle="bold"
         android:layout_margin="20dp"/>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/taskAudiosListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
