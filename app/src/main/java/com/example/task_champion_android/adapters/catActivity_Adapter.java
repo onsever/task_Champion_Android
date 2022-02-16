@@ -16,7 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.task_champion_android.R;
-import com.example.task_champion_android.catActivityData;
+import com.example.task_champion_android.activities.catActivityData;
 import com.example.task_champion_android.databinding.CategoriesLayoutBinding;
 
 import java.util.ArrayList;

@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.catActivity_Adapter;
-import com.example.task_champion_android.catActivityData;
 //import com.example.task_champion_android.catActivity_Adapter;
 import com.example.task_champion_android.databinding.ActivityCategoriesBinding;
 

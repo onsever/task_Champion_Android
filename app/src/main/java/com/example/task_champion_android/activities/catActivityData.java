@@ -1,4 +1,4 @@
-package com.example.task_champion_android;
+package com.example.task_champion_android.activities;
 
 public class catActivityData {
     private String cat_name;
