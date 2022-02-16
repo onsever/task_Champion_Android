@@ -58,8 +58,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         queryDao.insertMediaItem(mediaItem1);
                         queryDao.insertMediaItem(mediaItem2);
                         Category category2 = new Category("Business");
-                         queryDao.insertCategory(category2);
-                    });
+                        queryDao.insertCategory(category2);
                     });
                 }
             };
