@@ -36,22 +36,6 @@ public class Item {
     @ColumnInfo(name = "isCompleted")
     private boolean isCompleted =false;
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
-    }
-
     @ColumnInfo(name = "created_at", defaultValue = "CURRENT_TIMESTAMP")
     private String createdAt;
 
@@ -61,11 +45,10 @@ public class Item {
     @Ignore Item () {
     }
 
-    public Item(@NonNull String name, @NonNull long categoryId, String detail, boolean isCompleted, String dueDate) {
+    public Item(@NonNull String name, @NonNull long categoryId, String detail, String dueDate) {
         this.name = name;
         this.categoryId = categoryId;
         this.detail = detail;
-        this.isCompleted = isCompleted;
         this.dueDate = dueDate;
     }
 
@@ -99,5 +82,21 @@ public class Item {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
     }
 }
