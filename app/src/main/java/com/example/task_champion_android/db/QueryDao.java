@@ -26,6 +26,9 @@ public abstract class QueryDao {
     @Delete
     public abstract void deleteMediaItem(MediaItem mediaItem);
 
+    @Query("DELETE FROM category_table")
+    public abstract void deleteAll();
+
     @Transaction
     public void updateMediaItem(Category category, Item item, MediaItem mediaItem){
         updateItem(category,item);
