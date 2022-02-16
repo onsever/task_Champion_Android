@@ -18,19 +18,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.activities.catActivityData;
 import com.example.task_champion_android.databinding.CategoriesLayoutBinding;
+import com.example.task_champion_android.db.Category;
+import com.example.task_champion_android.db.CategoryWithItems;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class catActivity_Adapter extends RecyclerView.Adapter<catActivity_Adapter.CatViewHolder> {
     Context context;
-    ArrayList<catActivityData> categories;
+
     CategoriesLayoutBinding binding;
     public static int selectedIndex = 0;
+    private List<CategoryWithItems> category;
+    private CategoryClickListener categoryClickListener;
 
 
-    public catActivity_Adapter(Context context, ArrayList<catActivityData> categories) {
+
+    public catActivity_Adapter(Context context, CategoryClickListener categoryClickListener) {
         this.context = context;
-        this.categories = categories;
+        this.categoryClickListener = categoryClickListener;
+    }
+    public void setCategories(List<CategoryWithItems> category) {
+        this.category = category;
+        notifyDataSetChanged();
     }
 
 
@@ -44,65 +54,42 @@ public class catActivity_Adapter extends RecyclerView.Adapter<catActivity_Adapte
 
     }
 
+
+
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        binding.catName.setText(categories.get(position).getCat_name());
-        binding.catIcon.setImageResource(categories.get(position).getCatImage());
+        binding.catName.setText(category.get(position).getCategory().getName());
+       // binding.catIcon.setImageResource(category.get(position).getCatImage());
         binding.getRoot().setOnClickListener(v -> {
             notifyItemChanged(position);
             selectedIndex = position;
             System.out.println(selectedIndex);
         });
-
-            binding.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v)
-                    {
-                        Dialog dialog=new Dialog(context);
-                        dialog.setContentView(R.layout.add_category);
-                         TextView txtTitle=dialog.findViewById(R.id.textView);
-                        EditText catET=dialog.findViewById(R.id.editTextCategory);
-                        Button dialogBtnAction = dialog.findViewById(R.id.btnAddCat);
-                        txtTitle.setText("Update Category");
-                        dialogBtnAction.setText("UPDATE");
-                        catET.setText(categories.get(position).getCat_name());
-                        dialogBtnAction.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String catName="";
-                                if(!catET.getText().toString().equals("")) {
-                                    catName = catET.getText().toString();
-                                }
-                                else
-                                {
-                                    Toast.makeText(context, "Enter Category Name", Toast.LENGTH_SHORT).show();
-                                }
-                                categories.set(position,new catActivityData(catName, R.drawable.ic_baseline_category_24));
-                                notifyItemChanged(position);
-                                dialog.dismiss();
-
-                            }
-                        });
-                        dialog.show();
+        binding.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                categoryClickListener.onItemDelete(category.get(position).getCategory());
+            }
+        });
+        binding.btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                categoryClickListener.onItemUpdate(category.get(position).getCategory(),selectedIndex);
+            }
+        });
 
 
-                }
-            });
-
-            binding.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-
-                    return false;
-                }
-            });
 
 
     }
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        if (category == null || category.size() == 0) {
+            return 0;
+        }
+
+        return category.size();
     }
 
     static class CatViewHolder extends RecyclerView.ViewHolder {
@@ -114,4 +101,11 @@ public class catActivity_Adapter extends RecyclerView.Adapter<catActivity_Adapte
 
         }
     }
+    public interface  CategoryClickListener{
+        void onItemUpdate(Category category, int selectedIndex);
+        void onItemDelete(Category category);
+
+
+    }
+
 }

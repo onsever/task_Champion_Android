@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         addNewTaskDialog.setMessage("Please enter the name of the task.");
         addNewTaskDialog.setView(taskTextField);
 
-        addNewTaskDialog.setPositiveButton("Add", (dialog, which) -> {
+        addNewTaskDialog.setPositiveButton("Add", (dialog, i) -> {
             String taskName = taskTextField.getText().toString();
 
             if (TextUtils.isEmpty(taskName)) {
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
 //            Category category = new Category(taskName);
 //            categoryViewModel.insertCategory(category);
+
             Item item = new Item(taskName, categoryId, "", "");
             categoryViewModel.insertItemToCategory(category, item);
 
