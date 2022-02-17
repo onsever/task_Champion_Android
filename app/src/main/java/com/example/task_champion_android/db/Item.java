@@ -10,6 +10,8 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
 @Entity(tableName = "item_table",
         indices = {@Index("category_id")},
         foreignKeys = @ForeignKey(
@@ -36,7 +38,7 @@ public class Item  {
     @ColumnInfo(name = "isCompleted")
     private boolean isCompleted =false;
 
-    @ColumnInfo(name = "created_at", defaultValue = "CURRENT_TIMESTAMP")
+    @ColumnInfo(name = "created_at")
     private String createdAt;
 
     @ColumnInfo(name = "due_date")
@@ -49,6 +51,7 @@ public class Item  {
         this.name = name;
         this.categoryId = categoryId;
         this.detail = detail;
+        this.createdAt = new Date().toString();
         this.dueDate = dueDate;
     }
 

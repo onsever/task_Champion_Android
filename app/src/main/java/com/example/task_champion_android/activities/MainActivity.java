@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private SwipeHelper swipeHelper;
     private int seletedIndex = 0;
 
-    private static final String ITEM_ID = "itemId";
+    public static final String ITEM_ID = "itemId";
+    public static final String CAT_ID = "CategoryId";
     private List<Item> itemList;
     //private int isCompletedCounter = 0;
 
@@ -255,7 +256,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClickedOn(Item item) {
         Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-        intent.putExtra(ITEM_ID, String.valueOf(item.getId()));
+        intent.putExtra(ITEM_ID, item.getId());
+        intent.putExtra(CAT_ID, this.categoryId);
         startActivity(intent);
     }
 

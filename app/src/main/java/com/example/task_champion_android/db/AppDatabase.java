@@ -51,7 +51,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         QueryDao queryDao = INSTANCE.queryDao();
                         Category category1 = new Category("Home");
                         long catId1 = queryDao.insertCategory(category1);
-                        Item item1 = new Item("testing1", catId1, "testing details", "-NA-");
+                        Item item1 = new Item("testing1", catId1, "testing details", "");
                         long itemId1 = queryDao.insertItem(item1);
                         MediaItem mediaItem1 = new MediaItem("testing1", "/1/1221",itemId1,MediaItem.Type.AUDIO);
                         MediaItem mediaItem2 = new MediaItem("testing2", "/1/1221",itemId1,MediaItem.Type.AUDIO);

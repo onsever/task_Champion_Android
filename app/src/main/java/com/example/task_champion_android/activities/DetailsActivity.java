@@ -29,12 +29,18 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.AudioItemsAdapter;
 import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
+import com.example.task_champion_android.db.Category;
 import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.db.MediaItem;
 import com.example.task_champion_android.helper.PathUtilHelper;
@@ -44,8 +50,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -62,9 +71,12 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
     private Boolean isRecording = false;
     private Boolean isPlayer = false;
 
+    private List<Category> categories;
     private Item selectedItem;
+    private Category selectedCategory;
 
     private long itemId;
+    private long catID;
 
     private Boolean importAudio = false;
     private Boolean importImage = false;
@@ -91,20 +103,56 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
         setContentView(binding.getRoot());
         hideStatusBar();
         Intent intent = getIntent();
-        String _item = intent.getStringExtra("itemId");
-        itemId = Long.parseLong(_item);
+//        String _item = intent.getStringExtra("itemId");
+//        itemId = Long.parseLong(_item);
+        itemId = intent.getLongExtra(MainActivity.ITEM_ID,0);
+        catID = intent.getLongExtra(MainActivity.CAT_ID, 0);
         configureAdapters();
 
         categoryViewModel.getSelectedItem(itemId).observe(this, item -> {
             selectedItem = item;
+            binding.taskName.setText(selectedItem.getName());
+            binding.taskDate.setText(item.getCreatedAt());
+            if (!selectedItem.getDueDate().isEmpty()) {
+                String date = selectedItem.getDueDate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate parsedDate = LocalDate.parse(date, formatter);
+                binding.datePicker.updateDate(parsedDate.getYear(),parsedDate.getMonthValue()-1,parsedDate.getDayOfMonth());
+            }else{
+                LocalDate date = LocalDate.now();
+                binding.datePicker.updateDate(date.getYear(),date.getMonthValue()-1,date.getDayOfMonth());
+            }
+            binding.taskDetails.setText(selectedItem.getDetail());
             long itemId = selectedItem.getId();
             categoryViewModel.getMediaByItemId(itemId).observe(this, mediaItems -> {
                 handleMediaChange(mediaItems);
             });
         });
 
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
+        categoryViewModel.getCategories().observe(this, categoryList -> {
+            categories = categoryList;
+            selectedCategory = categoryList.stream().filter(c -> c.getId()==catID).findFirst().get();
+            int position = categoryList.indexOf(selectedCategory);
+            List<String> nameList =  categoryList.stream().map(c -> c.getName()).collect(Collectors.toList());
+            ArrayAdapter<String> aa = new ArrayAdapter<>(
+                    this,
+                    androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                    nameList);
+            binding.categoriesSpinner.setAdapter(aa);
+            binding.categoriesSpinner.setSelection(position);
+        });
+        binding.categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = categories.get(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -231,6 +279,37 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        selectedItem.setDueDate(getDate());
+        selectedItem.setName(binding.taskName.getText().toString());
+        selectedItem.setDetail(binding.taskDetails.getText().toString());
+        selectedItem.setCategoryId(selectedCategory.getId());
+        categoryViewModel.updateItem(selectedCategory, selectedItem);
+    }
+
+    private String getDate () {
+        String year = String.valueOf(binding.datePicker.getYear());
+        int monthValue = binding.datePicker.getMonth()+1;
+        int dayValue = binding.datePicker.getDayOfMonth();
+        String month;
+        String day;
+        if (monthValue <= 9) {
+            month = "0" + String.valueOf(monthValue);
+        }else{
+            month = String.valueOf(monthValue);
+        }
+        if (dayValue <= 9) {
+            day = "0" + String.valueOf(dayValue);
+        }else{
+            day = String.valueOf(dayValue);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = year + '-' + month + '-' + day;
+        String parsedDate = LocalDate.parse(date, formatter).toString();
+        return parsedDate;
+    }
 
     private void importAudio() {
         if(checkDevicePermission()) {
