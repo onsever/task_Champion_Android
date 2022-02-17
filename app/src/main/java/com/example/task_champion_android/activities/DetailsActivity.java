@@ -245,7 +245,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
 
         audioList = list.stream().filter(isAudio).collect(Collectors.toList());
         imageList = list.stream().filter(isImage).collect(Collectors.toList());
-        if(imageList.size()>0) {
+//        if(imageList.size()>0) {
             if (checkDevicePermission()) {
                 taskImageAdapter = new TaskImageAdapter(this, imageList,this);
                 binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
@@ -255,7 +255,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
                     taskImageAdapter = new TaskImageAdapter(this, imageList,this);
                     binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
                 }
-            }
+//            }
         }
         audioItemsAdapter = new AudioItemsAdapter(this, audioList);
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
