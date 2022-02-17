@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -12,16 +13,21 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.FileUtils;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -31,9 +37,13 @@ import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
 import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.db.MediaItem;
+import com.example.task_champion_android.helper.PathUtilHelper;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
@@ -92,13 +102,15 @@ public class DetailsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onActivityResult(ActivityResult result) {
-                if(result.getResultCode() == RESULT_OK && result.getData() != null){
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     Intent intent = result.getData();
                     Uri fileUri = intent.getData();
-                    Log.d("detailsActivity", String.valueOf(fileUri.getPath()));
-                    //TODO - need to found solution to get absolute path;
+                    String realPath = PathUtilHelper.getRealPath(getApplicationContext(),fileUri);
+                    addNewAudioFile(realPath);
+
                 }
             }
         });
@@ -125,6 +137,7 @@ public class DetailsActivity extends AppCompatActivity {
                 ,0);
 
     }
+
 
     private void importAudio() {
         Intent intent = new Intent();
@@ -196,7 +209,7 @@ public class DetailsActivity extends AppCompatActivity {
         );
         try{
 
-            mediaPlayer.setDataSource(getApplicationContext(), Uri.fromFile(new File(path)));
+            mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             mediaPlayer.start();
         }catch (IOException e) {
