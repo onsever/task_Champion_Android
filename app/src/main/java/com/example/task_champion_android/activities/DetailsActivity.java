@@ -14,12 +14,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -28,7 +26,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -43,9 +40,8 @@ import com.example.task_champion_android.db.MediaItem;
 import com.example.task_champion_android.helper.PathUtilHelper;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +68,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
 
     private Boolean importAudio = false;
     private Boolean importImage = false;
+    private Boolean isCamera = false;
 
     private final int REQUEST_PERMISSION_CODE = 1;
 
@@ -113,12 +110,35 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
             public void onActivityResult(ActivityResult result) {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     Intent intent = result.getData();
-                    Uri fileUri = intent.getData();
-                    String realPath = PathUtilHelper.getRealPath(getApplicationContext(),fileUri);
                     if(importAudio) {
+                        Uri fileUri = intent.getData();
+                        String realPath = PathUtilHelper.getRealPath(getApplicationContext(),fileUri);
                         addNewAudioFile(realPath);
                     }else if (importImage){
+                        Uri fileUri = intent.getData();
+                        String realPath = PathUtilHelper.getRealPath(getApplicationContext(),fileUri);
                         addNewImageFile(realPath);
+                    } else if(isCamera){
+                        String path = Environment.getExternalStorageDirectory() + File.separator;
+                        String filename = path + imageList.size()+1 +".jpg";
+                        File pictureFile = new File(filename);
+                        Bitmap bp = (Bitmap) intent.getExtras().get("data");
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte [] data = stream.toByteArray();
+                        bp.recycle();
+                        try {
+                            FileOutputStream fos = new FileOutputStream(pictureFile);
+                            fos.write(data);
+                            fos.close();
+                            addNewImageFile(filename);
+                            isCamera = false;
+                        } catch (Exception error) {
+                            Log.d("SAVE IMAGE", "File" + filename + "not saved: "
+                                    + error.getMessage());
+                            Toast.makeText(getApplicationContext(), "Image could not be saved.",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             }
@@ -148,11 +168,28 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
                 importAudio();
             }
         });
+        binding.camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!checkCameraPermission()){
+                    requestCamPermission();
+                }else {
+                    startCamera();
+                }
+            }
+        });
         audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                 ,0);
     }
+
+    private void startCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncher.launch(intent);
+        isCamera = true;
+    }
+
 
     private void handleMediaChange(List<MediaItem> list) {
         Predicate<MediaItem> isAudio = newItem -> newItem.getType().equals(MediaItem.Type.AUDIO);
@@ -162,12 +199,12 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
         imageList = list.stream().filter(isImage).collect(Collectors.toList());
         if(imageList.size()>0) {
             if (checkDevicePermission()) {
-                taskImageAdapter = new TaskImageAdapter(this, imageList);
+                taskImageAdapter = new TaskImageAdapter(this, imageList,this);
                 binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
             } else {
                 requestPermission();
                 if (checkDevicePermission()) {
-                    taskImageAdapter = new TaskImageAdapter(this, imageList);
+                    taskImageAdapter = new TaskImageAdapter(this, imageList,this);
                     binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
                 }
             }
@@ -176,6 +213,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
         importImage = false;
         importAudio = false;
+        isCamera = false;
     }
 
 
