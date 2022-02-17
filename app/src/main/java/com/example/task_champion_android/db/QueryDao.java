@@ -48,6 +48,12 @@ public abstract class QueryDao {
     @Query("SELECT * FROM item_table WHERE category_id = :categoryId")
     public abstract LiveData<List<Item>> getAllItems(long categoryId);
 
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId ORDER BY name ASC")
+    public abstract LiveData<List<Item>> getAllItemsSortedByName(long categoryId);
+
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId ORDER BY created_at DESC")
+    public abstract LiveData<List<Item>> getAllItemsSortedByDate(long categoryId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertItem(Item item);
 

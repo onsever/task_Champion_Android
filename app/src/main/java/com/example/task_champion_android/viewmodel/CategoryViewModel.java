@@ -58,6 +58,11 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
 
+    public LiveData<List<Item>> getItemsSortedByName(long id) { return repository.getAllItemsSortedByName(id);}
+
+    public LiveData<List<Item>> getItemsSortedByDate(long id) { return repository.getAllItemsSortedByDate(id);}
+
+
     public void insertMediaItem( MediaItem mediaItem) {
         repository.insertMediaItem(mediaItem);
     }

@@ -32,6 +32,8 @@ import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.helper.SwipeHelper;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                         "Delete",
                         R.drawable.ic_baseline_delete_24,
                         30,
-                        50,
+                        0,
                         Color.parseColor("#ff3c30"),
                         SwipeDirection.LEFT,
                         position -> {
@@ -170,14 +172,18 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     private void configureButtonListeners() {
         binding.sortByTaskButton.setOnClickListener(v -> {
-            categoryViewModel.sortItemByTask(this.categoryId).observe(MainActivity.this, items -> {
-                tasksAdapter.setItems(items);
+            categoryViewModel.getItemsSortedByName(categoryId).observe(this, _list -> {
+                TasksAdapter adapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                adapter.setItems(_list);
+                binding.tasksRecyclerView.setAdapter(adapter);
             });
         });
 
         binding.sortByDateButton.setOnClickListener(v -> {
-            categoryViewModel.sortItemByDate(this.categoryId).observe(MainActivity.this, items -> {
-                tasksAdapter.setItems(items);
+            categoryViewModel.getItemsSortedByDate(categoryId).observe(this, _list -> {
+                TasksAdapter adapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                adapter.setItems(_list);
+                binding.tasksRecyclerView.setAdapter(adapter);
             });
         });
 
@@ -186,29 +192,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.moveToCategories.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategoriesActivity.class);
             startActivity(intent);
-        });
-
-        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (query != null) {
-                    searchDatabase(query);
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-    }
-
-    private void searchDatabase(String query) {
-        String searchQuery = "%$query%";
-
-        categoryViewModel.searchItemByName(categoryId, searchQuery).observe(this, items -> {
-            tasksAdapter.setItems(items);
         });
     }
 

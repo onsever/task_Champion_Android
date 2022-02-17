@@ -20,7 +20,7 @@ import androidx.room.PrimaryKey;
         )
 )
 
-public class Item {
+public class Item  {
     @PrimaryKey(autoGenerate = true)
     private long id;
 

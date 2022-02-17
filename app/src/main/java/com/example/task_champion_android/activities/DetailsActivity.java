@@ -36,11 +36,13 @@ import com.example.task_champion_android.viewmodel.CategoryViewModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private List<MediaItem> itemList;
+    private List<MediaItem> imageList;
+    private List<MediaItem> audioList;
     private ActivityDetailsBinding binding;
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
@@ -79,8 +81,11 @@ public class DetailsActivity extends AppCompatActivity {
             selectedItem = item;
             long itemId = selectedItem.getId();
             categoryViewModel.getMediaByItemId(itemId).observe(this, mediaItems -> {
-                itemList = mediaItems;
-                audioItemsAdapter = new AudioItemsAdapter(this, itemList);
+                Predicate<MediaItem> isAudio = newItem -> newItem.getType().equals(MediaItem.Type.AUDIO);
+                Predicate<MediaItem> isImage = imageItem -> imageItem.getType().equals(MediaItem.Type.IMAGE);
+                audioList = mediaItems.stream().filter(isAudio).collect(Collectors.toList());
+                imageList = mediaItems.stream().filter(isImage).collect(Collectors.toList());
+                audioItemsAdapter = new AudioItemsAdapter(this, audioList);
                 binding.audioRecyclerView.setAdapter(audioItemsAdapter);
             });
         });
@@ -151,7 +156,7 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     private void addNewAudioFile(String filePath) {
-        String name = String.valueOf(itemList.size()+1);
+        String name = String.valueOf(audioList.size()+1);
         MediaItem item = new MediaItem();
         item.setName(name);
         item.setUri(filePath);
@@ -165,10 +170,9 @@ public class DetailsActivity extends AppCompatActivity {
     private void startRecording() {
         if(checkDevicePermission()){
             //TODO audio store path need to find solution;
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                    .getPath() + "/";
-            filePath = path + UUID.randomUUID() +".mp3";
-            setUpRecorder();
+            String path = Environment.getExternalStorageDirectory() + File.separator;
+            filePath = path + audioList.size()+1 +".3gpp";
+            setUpRecorder(filePath);
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
@@ -200,12 +204,12 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private  void setUpRecorder() {
+    private  void setUpRecorder(String path) {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mediaRecorder.setOutputFile(filePath);
+        mediaRecorder.setOutputFile(path);
     }
 
     private void requestPermission () {
