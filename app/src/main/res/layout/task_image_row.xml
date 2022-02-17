@@ -7,6 +7,7 @@
     android:layout_margin="8dp">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/imageCardView"
         android:layout_width="175dp"
         android:layout_height="150dp"
         app:cardBackgroundColor="@color/white"
@@ -16,7 +17,8 @@
         <ImageView
             android:id="@+id/taskImageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"/>
 
     </androidx.cardview.widget.CardView>
 
