@@ -54,6 +54,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
             itemClickListener.onItemClickedOn(items.get(position));
         });
 
+        binding.deleteTask.setOnClickListener(v -> {
+            itemClickListener.onItemDelete(items.get(position));
+        });
+
+        binding.markTask.setOnClickListener(v -> {
+            itemClickListener.onItemUpdate(items.get(position));
+        });
+
         if (items.get(position).isCompleted()) {
             binding.completedView.setBackground(context.getDrawable(R.drawable.completion_view));
         }
@@ -76,6 +84,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
 
     public interface ItemClickListener {
         void onItemClickedOn(Item item);
+        void onItemDelete(Item item);
+        void onItemUpdate(Item item);
     }
 
 }

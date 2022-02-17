@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
-        swipeAction();
         configureSearchBarListeners();
         initViewModel();
 
@@ -81,42 +80,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
             categoriesAdapter.setCategories(categoryWithItems);
         });
 
-
-    }
-
-    private void swipeAction() {
-
-        swipeHelper = new SwipeHelper(this, 300, binding.tasksRecyclerView) {
-            @Override
-            protected void instantiateSwipeButton(RecyclerView.ViewHolder viewHolder, List<SwipeUnderlayButton> buffer) {
-
-                buffer.add(new SwipeUnderlayButton(MainActivity.this,
-                        "Delete",
-                        R.drawable.ic_baseline_delete_24,
-                        30,
-                        0,
-                        Color.parseColor("#ff3c30"),
-                        SwipeDirection.LEFT,
-                        position -> {
-                            Item item = tasksAdapter.getPosition(position);
-                            categoryViewModel.deleteItem(item);
-                        }));
-
-                buffer.add(new SwipeUnderlayButton(MainActivity.this,
-                        "Mark",
-                        R.drawable.ic_baseline_update_24,
-                        30,
-                        50,
-                        Color.parseColor("#00FF00"),
-                        SwipeDirection.RIGHT,
-                        position -> {
-                            Item item = itemList.get(position);
-                            item.setCompleted(!item.isCompleted());
-                            categoryViewModel.updateItem(category, item);
-                        }));
-
-            }
-        };
 
     }
 
@@ -259,6 +222,17 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         intent.putExtra(ITEM_ID, item.getId());
         intent.putExtra(CAT_ID, this.categoryId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemDelete(Item item) {
+        categoryViewModel.deleteItem(item);
+    }
+
+    @Override
+    public void onItemUpdate(Item item) {
+        item.setCompleted(!item.isCompleted());
+        categoryViewModel.updateItem(category, item);
     }
 
 }
