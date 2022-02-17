@@ -12,6 +12,7 @@ import com.example.task_champion_android.databinding.CategoriesRowBinding;
 import com.example.task_champion_android.db.Category;
 import com.example.task_champion_android.db.CategoryWithItems;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.CatViewHolder> {
@@ -19,7 +20,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     Context context;
     CategoriesRowBinding binding;
     public static int selectedIndex = 0;
-    private List<CategoryWithItems> categories;
+    private List<CategoryWithItems> categories = new ArrayList<>();
     private CategoryClickListener categoryClickListener;
 
     private int numberOfItems;
@@ -30,7 +31,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     }
 
     public void setCategories(List<CategoryWithItems> categories) {
-        this.categories = categories;
+        this.categories.clear();
+        this.categories.addAll(categories);
+//        this.categories = categories;
         notifyDataSetChanged();
     }
 
@@ -54,14 +57,15 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         return categories.size();
     }
 
+    
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, int position) {
-        categoryClickListener.getCategoriesId(categories.get(0).getCategory().getId());
-        categoryClickListener.onItemClick(categories.get(0).getCategory(), holder.getAdapterPosition(), categories.get(0));
+        categoryClickListener.getCategoriesId(categories.get(selectedIndex).getCategory().getId());
+        categoryClickListener.onItemClick(categories.get(selectedIndex).getCategory(), holder.getBindingAdapterPosition(), categories.get(selectedIndex));
         binding.categoryName.setText(categories.get(position).getCategory().getName());
         binding.taskCounter.setText(String.format(context.getResources().getString(R.string.taskCounter), categories.get(position).getItemListSize()));
         binding.cardView.setOnClickListener(v -> {
-            selectedIndex = holder.getAdapterPosition();
+            selectedIndex = holder.getBindingAdapterPosition();
             categoryClickListener.onItemClick(categories.get(selectedIndex).getCategory(), selectedIndex, categories.get(position));
             categoryClickListener.getCategoriesId(categories.get(selectedIndex).getCategory().getId());
         });

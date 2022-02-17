@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private long categoryId;
     private Category category;
     private SwipeHelper swipeHelper;
-    private int seletedIndex = 0;
+    private int selectedIndex = 0;
 
     public static final String ITEM_ID = "itemId";
     public static final String CAT_ID = "CategoryId";
-    private List<Item> itemList;
+//    private List<Item> itemList;
     //private int isCompletedCounter = 0;
 
 
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
+        swipeAction();
         configureSearchBarListeners();
         initViewModel();
 
@@ -77,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
 
         categoryViewModel.getCategoryWithItems().observe(this, categoryWithItems -> {
-            categoriesAdapter.setCategories(categoryWithItems);
+            CategoriesAdapter categoriesAdapter1 = new CategoriesAdapter(this,this);
+            binding.categoriesRecyclerView.setAdapter(categoriesAdapter1);
+            categoriesAdapter1.setCategories(categoryWithItems);
         });
 
 
@@ -158,11 +161,11 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                categoryViewModel.searchItemByName(categoryId, query).observe(MainActivity.this, itemList ->{
+                categoryViewModel.searchItemByName(categoryId, query).observe(MainActivity.this, _itemList ->{
                     TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
                     binding.tasksRecyclerView.setAdapter(newTaskAdapter);
-                    newTaskAdapter.setItems(itemList);
-                    if (itemList.isEmpty()){
+                    newTaskAdapter.setItems(_itemList);
+                    if (_itemList.isEmpty()){
                         Toast.makeText(getApplicationContext(),
                                 "No records found",Toast.LENGTH_SHORT).show();
                     }
@@ -179,10 +182,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                categoryViewModel.searchItemByCatID(categoryId).observe(MainActivity.this, itemList -> {
+                categoryViewModel.searchItemByCatID(categoryId).observe(MainActivity.this, _itemList -> {
                     TasksAdapter newTaskAdapter = new TasksAdapter(MainActivity.this, MainActivity.this);
                     binding.tasksRecyclerView.setAdapter(newTaskAdapter);
-                    newTaskAdapter.setItems(itemList);
+                    newTaskAdapter.setItems(_itemList);
                 });
                 return false;
             }
@@ -194,13 +197,13 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         System.out.println("Selected Index: " + selectedIndex);
         //isCompletedCounter = 0;
         this.category = category;
-        this.seletedIndex = selectedIndex;
+        this.selectedIndex = selectedIndex;
 
         tasksAdapter = new TasksAdapter(MainActivity.this, this);
         binding.tasksRecyclerView.setAdapter(tasksAdapter);
         tasksAdapter.setItems(categoryWithItems.getItemList());
 
-        this.itemList = categoryWithItems.getItemList();
+//        this.itemList = categoryWithItems.getItemList();
 
 //        for (int i = 0; i < itemList.size(); i++) {
 //            if (itemList.get(i).isCompleted()) {

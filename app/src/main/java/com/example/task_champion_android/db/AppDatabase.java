@@ -50,13 +50,13 @@ public abstract class AppDatabase extends RoomDatabase {
                        databaseWriteExecutor.execute(() -> {
                         QueryDao queryDao = INSTANCE.queryDao();
                         Category category1 = new Category("Home");
-                        long catId1 = queryDao.insertCategory(category1);
-                        Item item1 = new Item("testing1", catId1, "testing details", "");
-                        long itemId1 = queryDao.insertItem(item1);
-                        MediaItem mediaItem1 = new MediaItem("testing1", "/1/1221",itemId1,MediaItem.Type.AUDIO);
-                        MediaItem mediaItem2 = new MediaItem("testing2", "/1/1221",itemId1,MediaItem.Type.AUDIO);
-                        queryDao.insertMediaItem(mediaItem1);
-                        queryDao.insertMediaItem(mediaItem2);
+                        queryDao.insertCategory(category1);
+//                        Item item1 = new Item("testing1", catId1, "testing details", "");
+//                        long itemId1 = queryDao.insertItem(item1);
+//                        MediaItem mediaItem1 = new MediaItem("testing1", "/1/1221",itemId1,MediaItem.Type.AUDIO);
+//                        MediaItem mediaItem2 = new MediaItem("testing2", "/1/1221",itemId1,MediaItem.Type.AUDIO);
+//                        queryDao.insertMediaItem(mediaItem1);
+//                        queryDao.insertMediaItem(mediaItem2);
                         Category category2 = new Category("Business");
                         queryDao.insertCategory(category2);
                     });
