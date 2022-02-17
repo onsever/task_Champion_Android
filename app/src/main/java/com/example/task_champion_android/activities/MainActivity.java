@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private int seletedIndex = 0;
 
     private static final String ITEM_ID = "itemId";
+    private List<Item> itemList;
+    private int isCompletedCounter = 0;
 
 
     @Override
@@ -89,12 +91,28 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                         "Delete",
                         R.drawable.ic_baseline_delete_24,
                         30,
-                        0,
+                        50,
                         Color.parseColor("#ff3c30"),
                         SwipeDirection.LEFT,
                         position -> {
                             Item item = tasksAdapter.getPosition(position);
                             categoryViewModel.deleteItem(item);
+                        }));
+
+                buffer.add(new SwipeUnderlayButton(MainActivity.this,
+                        "Mark",
+                        R.drawable.ic_baseline_update_24,
+                        30,
+                        50,
+                        Color.parseColor("#00FF00"),
+                        SwipeDirection.RIGHT,
+                        position -> {
+                            Item item = itemList.get(position);
+                            item.setCompleted(!item.isCompleted());
+                            categoryViewModel.updateItem(category, item);
+
+//                            categoriesAdapter = new CategoriesAdapter(MainActivity.this, MainActivity.this);
+//                            binding.categoriesRecyclerView.setAdapter(categoriesAdapter);
                         }));
 
             }
@@ -152,11 +170,15 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     private void configureButtonListeners() {
         binding.sortByTaskButton.setOnClickListener(v -> {
-
+            categoryViewModel.sortItemByTask(this.categoryId).observe(MainActivity.this, items -> {
+                tasksAdapter.setItems(items);
+            });
         });
 
         binding.sortByDateButton.setOnClickListener(v -> {
-
+            categoryViewModel.sortItemByDate(this.categoryId).observe(MainActivity.this, items -> {
+                tasksAdapter.setItems(items);
+            });
         });
 
         binding.addTaskButton.setOnClickListener(v -> createAddTaskAlert());
@@ -164,6 +186,29 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         binding.moveToCategories.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategoriesActivity.class);
             startActivity(intent);
+        });
+
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query != null) {
+                    searchDatabase(query);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void searchDatabase(String query) {
+        String searchQuery = "%$query%";
+
+        categoryViewModel.searchItemByName(categoryId, searchQuery).observe(this, items -> {
+            tasksAdapter.setItems(items);
         });
     }
 
@@ -206,12 +251,23 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems) {
         System.out.println("Selected Index: " + selectedIndex);
+        isCompletedCounter = 0;
         this.category = category;
         this.seletedIndex = selectedIndex;
 
         tasksAdapter = new TasksAdapter(MainActivity.this, this);
         binding.tasksRecyclerView.setAdapter(tasksAdapter);
         tasksAdapter.setItems(categoryWithItems.getItemList());
+
+        this.itemList = categoryWithItems.getItemList();
+
+        for (int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i).isCompleted()) {
+                isCompletedCounter++;
+            }
+        }
+
+        categoriesAdapter.setProgress(isCompletedCounter);
     }
 
     @Override

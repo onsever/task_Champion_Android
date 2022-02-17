@@ -89,4 +89,12 @@ public class CategoryViewModel extends AndroidViewModel {
         repository.deleteCategory(category);
     }
 
+    public LiveData<List<Item>> sortItemByTask(long categoryId) {
+        return repository.sortItemByTask(categoryId);
+    }
+
+    public LiveData<List<Item>> sortItemByDate(long categoryId) {
+        return repository.sortItemByDate(categoryId);
+    }
+
 }

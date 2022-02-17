@@ -79,4 +79,12 @@ public class AppDatabaseRepository {
         });
     }
 
+    public LiveData<List<Item>> sortItemByTask(long categoryId) {
+        return queryDao.sortItemsByTask(categoryId);
+    }
+
+    public LiveData<List<Item>> sortItemByDate(long categoryId) {
+        return queryDao.sortItemsByDate(categoryId);
+    }
+
 }

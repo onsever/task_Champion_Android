@@ -93,4 +93,9 @@ public abstract class QueryDao {
     @Query("DELETE FROM category_table")
     public abstract void deleteAllCategories();
 
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId ORDER BY name ASC")
+    public abstract LiveData<List<Item>> sortItemsByTask(long categoryId);
+
+    @Query("SELECT * FROM item_table WHERE category_id = :categoryId ORDER BY created_at ASC")
+    public abstract LiveData<List<Item>> sortItemsByDate(long categoryId);
 }
