@@ -112,9 +112,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
                             Item item = itemList.get(position);
                             item.setCompleted(!item.isCompleted());
                             categoryViewModel.updateItem(category, item);
-
-//                            categoriesAdapter = new CategoriesAdapter(MainActivity.this, MainActivity.this);
-//                            binding.categoriesRecyclerView.setAdapter(categoriesAdapter);
                         }));
 
             }
@@ -155,9 +152,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
             if (TextUtils.isEmpty(taskName)) {
                 return;
             }
-
-//            Category category = new Category(taskName);
-//            categoryViewModel.insertCategory(category);
 
             Item item = new Item(taskName, categoryId, "", "");
             categoryViewModel.insertItemToCategory(category, item);
