@@ -10,13 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.task_champion_android.R;
 import com.example.task_champion_android.databinding.TaskImageRowBinding;
+import com.example.task_champion_android.db.MediaItem;
+
+import java.util.List;
 
 public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.ImageViewHolder> {
 
     private TaskImageRowBinding binding;
     private Context context;
+    private List<MediaItem> imageList;
 
-    public TaskImageAdapter(Context context) {
+    public TaskImageAdapter(Context context, List<MediaItem> imageList)
+    {
+        this.imageList = imageList;
         this.context = context;
     }
 
@@ -34,7 +40,7 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
 
     @Override
     public int getItemCount() {
-        return 1;
+        return imageList.size();
     }
 
     class ImageViewHolder extends RecyclerView.ViewHolder {

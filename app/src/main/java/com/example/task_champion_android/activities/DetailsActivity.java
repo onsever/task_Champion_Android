@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -95,6 +96,8 @@ public class DetailsActivity extends AppCompatActivity {
                 Predicate<MediaItem> isImage = imageItem -> imageItem.getType().equals(MediaItem.Type.IMAGE);
                 audioList = mediaItems.stream().filter(isAudio).collect(Collectors.toList());
                 imageList = mediaItems.stream().filter(isImage).collect(Collectors.toList());
+                taskImageAdapter = new TaskImageAdapter(this, imageList);
+                binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
                 audioItemsAdapter = new AudioItemsAdapter(this, audioList);
                 binding.audioRecyclerView.setAdapter(audioItemsAdapter);
             });
@@ -140,10 +143,14 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     private void importAudio() {
-        Intent intent = new Intent();
-        intent.setType("audio/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        activityResultLauncher.launch(intent);
+        if(checkDevicePermission()) {
+            Intent intent = new Intent();
+            intent.setType("audio/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            activityResultLauncher.launch(intent);
+        }else {
+            requestPermission();
+        }
     }
 
     private void stopRecording() {
@@ -154,7 +161,7 @@ public class DetailsActivity extends AppCompatActivity {
             filePath = "";
             Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
             isRecording = false;
-            binding.recordAudio.setText("STOP");
+            binding.recordAudio.setText("RECORD");
         }
     }
 
@@ -258,7 +265,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void configureAdapters() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        taskImageAdapter = new TaskImageAdapter(this);
+        taskImageAdapter = new TaskImageAdapter(this, new ArrayList<>());
         binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
         binding.taskImagesRecyclerView.setLayoutManager(linearLayoutManager);
 
