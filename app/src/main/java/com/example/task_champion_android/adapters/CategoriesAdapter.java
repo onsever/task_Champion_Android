@@ -34,6 +34,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         notifyDataSetChanged();
     }
 
+    public void setProgress(int value) {
+        this.numberOfItems = value;
+    }
 
     @NonNull
     @Override
@@ -62,7 +65,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
             categoryClickListener.onItemClick(categories.get(selectedIndex).getCategory(), selectedIndex, categories.get(position));
             categoryClickListener.getCategoriesId(categories.get(selectedIndex).getCategory().getId());
         });
-
+        binding.itemCounter.setMax(categories.get(position).getItemListSize());
+        binding.itemCounter.setProgress(numberOfItems);
     }
 
     static class CatViewHolder extends RecyclerView.ViewHolder {
