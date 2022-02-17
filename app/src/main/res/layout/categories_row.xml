@@ -58,17 +58,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="10dp"/>
 
-            <ProgressBar
-                android:id="@+id/itemCounter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:scaleY="1.5"
-                android:progress="0"
-                android:progressTint="@color/cyan"
-                android:progressBackgroundTint="@color/darkCharcoal"/>
-
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

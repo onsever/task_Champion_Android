@@ -48,7 +48,7 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
         super.onCreate(savedInstanceState);
         binding = ActivityCategoriesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        hideStatusBar();
          catActivity_adapter= new catActivity_Adapter(this,this);
         binding.categ.setAdapter(catActivity_adapter);
         binding.categ.setLayoutManager(new LinearLayoutManager(this));
@@ -127,6 +127,12 @@ public class CategoriesActivity extends AppCompatActivity implements catActivity
         addNewTaskDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         addNewTaskDialog.show();
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
 

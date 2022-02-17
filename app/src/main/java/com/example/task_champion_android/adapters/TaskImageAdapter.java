@@ -24,11 +24,13 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
     private TaskImageRowBinding binding;
     private Context context;
     private List<MediaItem> imageList;
+    private ItemClickListener itemClickListener;
 
-    public TaskImageAdapter(Context context, List<MediaItem> imageList)
+    public TaskImageAdapter(Context context, List<MediaItem> imageList, ItemClickListener itemClickListener)
     {
         this.imageList = imageList;
         this.context = context;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -42,6 +44,13 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Bitmap finalBitmap = BitmapFactory.decodeFile(imageList.get(position).getUri());
         binding.taskImageView.setImageBitmap(finalBitmap);
+        binding.imageCardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                itemClickListener.onItemLongClick(imageList.get(position));
+                return true;
+            }
+        });
 //        binding.taskImageView.setImageURI(Uri.parse(new File(imageList.get(position).getUri()).toString()));
     }
 
@@ -55,5 +64,9 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
         public ImageViewHolder(@NonNull TaskImageRowBinding binding) {
             super(binding.getRoot());
         }
+    }
+
+    public interface ItemClickListener {
+        void onItemLongClick(MediaItem mediaItem);
     }
 }
