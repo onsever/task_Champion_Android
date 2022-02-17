@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.task_champion_android.R;
 import com.example.task_champion_android.adapters.AudioItemsAdapter;
 import com.example.task_champion_android.adapters.TaskImageAdapter;
 import com.example.task_champion_android.databinding.ActivityDetailsBinding;
@@ -67,6 +68,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private long itemId;
 
+    private Boolean importAudio = false;
+
     private final int REQUEST_PERMISSION_CODE = 1;
 
     private AudioItemsAdapter audioItemsAdapter;
@@ -88,6 +91,8 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String _item = intent.getStringExtra("itemId");
         itemId = Long.parseLong(_item);
+        configureAdapters();
+        requestPermission();
         categoryViewModel.getSelectedItem(itemId).observe(this, item -> {
             selectedItem = item;
             long itemId = selectedItem.getId();
@@ -96,8 +101,16 @@ public class DetailsActivity extends AppCompatActivity {
                 Predicate<MediaItem> isImage = imageItem -> imageItem.getType().equals(MediaItem.Type.IMAGE);
                 audioList = mediaItems.stream().filter(isAudio).collect(Collectors.toList());
                 imageList = mediaItems.stream().filter(isImage).collect(Collectors.toList());
-                taskImageAdapter = new TaskImageAdapter(this, imageList);
-                binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+                if(checkDevicePermission()){
+                    taskImageAdapter = new TaskImageAdapter(this, imageList);
+                    binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+                }else {
+                    requestPermission();
+                    if(checkDevicePermission()){
+                        taskImageAdapter = new TaskImageAdapter(this, imageList);
+                        binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+                    }
+                }
                 audioItemsAdapter = new AudioItemsAdapter(this, audioList);
                 binding.audioRecyclerView.setAdapter(audioItemsAdapter);
             });
@@ -115,6 +128,12 @@ public class DetailsActivity extends AppCompatActivity {
                     addNewAudioFile(realPath);
 
                 }
+            }
+        });
+        binding.importPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                importImage();
             }
         });
         binding.recordAudio.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +160,13 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
+    private void importImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        activityResultLauncher.launch(intent);
+    }
+
 
     private void importAudio() {
         if(checkDevicePermission()) {
@@ -148,6 +174,7 @@ public class DetailsActivity extends AppCompatActivity {
             intent.setType("audio/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             activityResultLauncher.launch(intent);
+            importAudio = true;
         }else {
             requestPermission();
         }
@@ -159,9 +186,9 @@ public class DetailsActivity extends AppCompatActivity {
             mediaRecorder = null;
             addNewAudioFile(filePath);
             filePath = "";
-            Toast.makeText(this, "Stop recording", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.stop_recording, Toast.LENGTH_LONG).show();
             isRecording = false;
-            binding.recordAudio.setText("RECORD");
+            binding.recordAudio.setText(R.string.record);
         }
     }
 
@@ -176,12 +203,12 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     private void addNewAudioFile(String filePath) {
-        String name = String.valueOf(audioList.size()+1);
+        String name = String.valueOf(importAudio?audioList.size()+1:imageList.size()+1);
         MediaItem item = new MediaItem();
         item.setName(name);
         item.setUri(filePath);
         item.setItemId(selectedItem.getId());
-        item.setType(MediaItem.Type.AUDIO);
+        item.setType(importAudio?MediaItem.Type.AUDIO:MediaItem.Type.IMAGE);
         categoryViewModel.insertMediaItem(item);
         audioItemsAdapter.updateItems();
     }
@@ -189,16 +216,15 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void startRecording() {
         if(checkDevicePermission()){
-            //TODO audio store path need to find solution;
             String path = Environment.getExternalStorageDirectory() + File.separator;
             filePath = path + audioList.size()+1 +".3gpp";
             setUpRecorder(filePath);
             try {
                 mediaRecorder.prepare();
                 mediaRecorder.start();
-                Toast.makeText(this, "start recording", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.start_recording, Toast.LENGTH_LONG).show();
                 isRecording = true;
-                binding.recordAudio.setText("STOP");
+                binding.recordAudio.setText(R.string.stop);
             }catch (IllegalStateException | IOException ise) {
                 ise.printStackTrace();
             }
@@ -259,8 +285,6 @@ public class DetailsActivity extends AppCompatActivity {
                     "Permission Denied",
                     Toast.LENGTH_SHORT).show();
         }
-
-        configureAdapters();
     }
 
     private void configureAdapters() {

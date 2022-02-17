@@ -1,6 +1,10 @@
 package com.example.task_champion_android.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,7 @@ import com.example.task_champion_android.R;
 import com.example.task_champion_android.databinding.TaskImageRowBinding;
 import com.example.task_champion_android.db.MediaItem;
 
+import java.io.File;
 import java.util.List;
 
 public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.ImageViewHolder> {
@@ -35,7 +40,9 @@ public class TaskImageAdapter extends RecyclerView.Adapter<TaskImageAdapter.Imag
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        binding.taskImageView.setImageResource(R.drawable.ic_baseline_add_24);
+        Bitmap finalBitmap = BitmapFactory.decodeFile(imageList.get(position).getUri());
+        binding.taskImageView.setImageBitmap(finalBitmap);
+//        binding.taskImageView.setImageURI(Uri.parse(new File(imageList.get(position).getUri()).toString()));
     }
 
     @Override
