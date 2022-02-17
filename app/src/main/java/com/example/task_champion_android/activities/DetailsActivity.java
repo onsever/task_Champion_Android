@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -51,7 +53,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements TaskImageAdapter.ItemClickListener {
 
     private List<MediaItem> imageList;
     private List<MediaItem> audioList;
@@ -90,6 +92,7 @@ public class DetailsActivity extends AppCompatActivity {
         binding = ActivityDetailsBinding.inflate(getLayoutInflater());
         categoryViewModel = new ViewModelProvider.AndroidViewModelFactory(this.getApplication()).create(CategoryViewModel.class);
         setContentView(binding.getRoot());
+        hideStatusBar();
         Intent intent = getIntent();
         String _item = intent.getStringExtra("itemId");
         itemId = Long.parseLong(_item);
@@ -211,7 +214,7 @@ public class DetailsActivity extends AppCompatActivity {
             filePath = "";
             Toast.makeText(this, R.string.stop_recording, Toast.LENGTH_LONG).show();
             isRecording = false;
-            binding.recordAudio.setText(R.string.record);
+            binding.recordAudio.setImageResource(R.drawable.ic_baseline_fiber_manual_record_24);
         }
     }
 
@@ -256,7 +259,7 @@ public class DetailsActivity extends AppCompatActivity {
                 mediaRecorder.start();
                 Toast.makeText(this, R.string.start_recording, Toast.LENGTH_LONG).show();
                 isRecording = true;
-                binding.recordAudio.setText(R.string.stop);
+                binding.recordAudio.setImageResource(R.drawable.ic_recording_24);
             }catch (IllegalStateException | IOException ise) {
                 ise.printStackTrace();
             }
@@ -335,7 +338,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     private void configureAdapters() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        taskImageAdapter = new TaskImageAdapter(this, new ArrayList<>());
+        taskImageAdapter = new TaskImageAdapter(this, new ArrayList<>(), this);
         binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
         binding.taskImagesRecyclerView.setLayoutManager(linearLayoutManager);
 
@@ -344,5 +347,33 @@ public class DetailsActivity extends AppCompatActivity {
         binding.audioRecyclerView.setAdapter(audioItemsAdapter);
         binding.audioRecyclerView.setLayoutManager(audioLinearLayoutManager);
 
+    }
+
+    private void deleteDialog(MediaItem mediaItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Are you sure?");
+        builder.setMessage("Do you want to delete this photo?");
+
+        builder.setPositiveButton("Delete", (dialog, which) -> {
+            categoryViewModel.deleteMediaItem(mediaItem);
+            dialog.dismiss();
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.dismiss();
+        });
+
+        builder.show();
+    }
+
+    private void hideStatusBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+
+    @Override
+    public void onItemLongClick(MediaItem mediaItem) {
+        deleteDialog(mediaItem);
     }
 }

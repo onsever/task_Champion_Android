@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     private static final String ITEM_ID = "itemId";
     private List<Item> itemList;
-    private int isCompletedCounter = 0;
+    //private int isCompletedCounter = 0;
 
 
     @Override
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     @Override
     public void onItemClick(Category category, int selectedIndex, CategoryWithItems categoryWithItems) {
         System.out.println("Selected Index: " + selectedIndex);
-        isCompletedCounter = 0;
+        //isCompletedCounter = 0;
         this.category = category;
         this.seletedIndex = selectedIndex;
 
@@ -238,13 +238,13 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
         this.itemList = categoryWithItems.getItemList();
 
-        for (int i = 0; i < itemList.size(); i++) {
-            if (itemList.get(i).isCompleted()) {
-                isCompletedCounter++;
-            }
-        }
-
-        categoriesAdapter.setProgress(isCompletedCounter);
+//        for (int i = 0; i < itemList.size(); i++) {
+//            if (itemList.get(i).isCompleted()) {
+//                isCompletedCounter++;
+//            }
+//        }
+//
+//        categoriesAdapter.setProgress(isCompletedCounter);
     }
 
     @Override
