@@ -69,7 +69,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
     private String filePath = "";
 
     private Boolean isRecording = false;
-    private Boolean isPlayer = false;
+    private Boolean isPlaying = false;
 
     private List<Category> categories;
     private Item selectedItem;
@@ -340,6 +340,11 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
     }
 
     public void playAudioFile(MediaItem mediaItem) {
+        if (isPlaying) {
+            mediaPlayer.stop();
+            mediaPlayer = null;
+            isPlaying = false;
+        }
         playAudio(mediaItem.getUri());
     }
 
@@ -396,6 +401,7 @@ public class DetailsActivity extends AppCompatActivity implements TaskImageAdapt
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            isPlaying = true;
         }catch (IOException e) {
             e.printStackTrace();
         }
