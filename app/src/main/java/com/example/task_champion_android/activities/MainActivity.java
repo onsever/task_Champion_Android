@@ -50,15 +50,10 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private CategoryViewModel categoryViewModel;
     private long categoryId;
     private Category category;
-    private SwipeHelper swipeHelper;
-    private int selectedIndex = 0;
+//    private int selectedIndex = 0;
 
     public static final String ITEM_ID = "itemId";
     public static final String CAT_ID = "CategoryId";
-//    private List<Item> itemList;
-    //private int isCompletedCounter = 0;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         hideStatusBar();
         configureAdapters();
         configureButtonListeners();
-        swipeAction();
         configureSearchBarListeners();
         initViewModel();
 
@@ -197,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         System.out.println("Selected Index: " + selectedIndex);
         //isCompletedCounter = 0;
         this.category = category;
-        this.selectedIndex = selectedIndex;
+//        this.selectedIndex = selectedIndex;
 
         tasksAdapter = new TasksAdapter(MainActivity.this, this);
         binding.tasksRecyclerView.setAdapter(tasksAdapter);

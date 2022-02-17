@@ -57,7 +57,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         return categories.size();
     }
 
-    
+
     @Override
     public void onBindViewHolder(@NonNull CatViewHolder holder, int position) {
         categoryClickListener.getCategoriesId(categories.get(selectedIndex).getCategory().getId());
