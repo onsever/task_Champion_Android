@@ -1,22 +1,16 @@
 package com.example.task_champion_android.activities;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.SearchView;
@@ -32,6 +26,8 @@ import com.example.task_champion_android.db.Item;
 import com.example.task_champion_android.helper.SwipeHelper;
 import com.example.task_champion_android.viewmodel.CategoryViewModel;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -49,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
     private long categoryId;
     private Category category;
     private SwipeHelper swipeHelper;
+    private List<Item> items = new ArrayList<>();
     private int seletedIndex = 0;
 
     private static final String ITEM_ID = "itemId";
@@ -152,11 +149,19 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
 
     private void configureButtonListeners() {
         binding.sortByTaskButton.setOnClickListener(v -> {
-
+            categoryViewModel.getItemsSortedByName(categoryId).observe(this, _list -> {
+                TasksAdapter adapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                adapter.setItems(_list);
+                binding.tasksRecyclerView.setAdapter(adapter);
+            });
         });
 
         binding.sortByDateButton.setOnClickListener(v -> {
-
+            categoryViewModel.getItemsSortedByDate(categoryId).observe(this, _list -> {
+                TasksAdapter adapter = new TasksAdapter(MainActivity.this, MainActivity.this);
+                adapter.setItems(_list);
+                binding.tasksRecyclerView.setAdapter(adapter);
+            });
         });
 
         binding.addTaskButton.setOnClickListener(v -> createAddTaskAlert());
@@ -208,6 +213,9 @@ public class MainActivity extends AppCompatActivity implements CategoriesAdapter
         System.out.println("Selected Index: " + selectedIndex);
         this.category = category;
         this.seletedIndex = selectedIndex;
+        this.items.clear();
+
+        this.items.addAll(categoryWithItems.getItemList());
 
         tasksAdapter = new TasksAdapter(MainActivity.this, this);
         binding.tasksRecyclerView.setAdapter(tasksAdapter);

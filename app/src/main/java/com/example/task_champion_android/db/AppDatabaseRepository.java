@@ -29,6 +29,10 @@ public class AppDatabaseRepository {
 
     public LiveData<List<ItemWithMedias>> getAllMediaItems() {return mediaItems;}
 
+    public LiveData<List<Item>> getAllItemsSortedByName(long id) { return queryDao.getAllItemsSortedByName(id);}
+
+    public LiveData<List<Item>> getAllItemsSortedByDate(long id) { return queryDao.getAllItemsSortedByDate(id);}
+
     public LiveData<List<MediaItem>> getMediasByItemId(long id) {return queryDao.getMediaItems(id);}
 
     public LiveData<List<Item>> searchItemByName(long catID, String name) {return queryDao.searchItemByName(catID, name);}
