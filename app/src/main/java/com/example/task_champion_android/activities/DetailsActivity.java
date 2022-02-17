@@ -69,15 +69,17 @@ public class DetailsActivity extends AppCompatActivity {
     private long itemId;
 
     private Boolean importAudio = false;
+    private Boolean importImage = false;
 
     private final int REQUEST_PERMISSION_CODE = 1;
+
+    private final int REQUEST_CAMERA_PERMISSION_CODE = 1555;
 
     private AudioItemsAdapter audioItemsAdapter;
 
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     private CategoryViewModel categoryViewModel;
-
 
 
     private TaskImageAdapter taskImageAdapter;
@@ -92,32 +94,17 @@ public class DetailsActivity extends AppCompatActivity {
         String _item = intent.getStringExtra("itemId");
         itemId = Long.parseLong(_item);
         configureAdapters();
-        requestPermission();
+
         categoryViewModel.getSelectedItem(itemId).observe(this, item -> {
             selectedItem = item;
             long itemId = selectedItem.getId();
             categoryViewModel.getMediaByItemId(itemId).observe(this, mediaItems -> {
-                Predicate<MediaItem> isAudio = newItem -> newItem.getType().equals(MediaItem.Type.AUDIO);
-                Predicate<MediaItem> isImage = imageItem -> imageItem.getType().equals(MediaItem.Type.IMAGE);
-                audioList = mediaItems.stream().filter(isAudio).collect(Collectors.toList());
-                imageList = mediaItems.stream().filter(isImage).collect(Collectors.toList());
-                if(checkDevicePermission()){
-                    taskImageAdapter = new TaskImageAdapter(this, imageList);
-                    binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
-                }else {
-                    requestPermission();
-                    if(checkDevicePermission()){
-                        taskImageAdapter = new TaskImageAdapter(this, imageList);
-                        binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
-                    }
-                }
-                audioItemsAdapter = new AudioItemsAdapter(this, audioList);
-                binding.audioRecyclerView.setAdapter(audioItemsAdapter);
+                handleMediaChange(mediaItems);
             });
         });
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        binding.audioRecyclerView.setLayoutManager(linearLayoutManager);
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
             @RequiresApi(api = Build.VERSION_CODES.Q)
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -125,17 +112,22 @@ public class DetailsActivity extends AppCompatActivity {
                     Intent intent = result.getData();
                     Uri fileUri = intent.getData();
                     String realPath = PathUtilHelper.getRealPath(getApplicationContext(),fileUri);
-                    addNewAudioFile(realPath);
-
+                    if(importAudio) {
+                        addNewAudioFile(realPath);
+                    }else if (importImage){
+                        addNewImageFile(realPath);
+                    }
                 }
             }
         });
+
         binding.importPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 importImage();
             }
         });
+
         binding.recordAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,14 +149,45 @@ public class DetailsActivity extends AppCompatActivity {
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
                 ,0);
-
     }
 
+    private void handleMediaChange(List<MediaItem> list) {
+        Predicate<MediaItem> isAudio = newItem -> newItem.getType().equals(MediaItem.Type.AUDIO);
+        Predicate<MediaItem> isImage = imageItem -> imageItem.getType().equals(MediaItem.Type.IMAGE);
+
+        audioList = list.stream().filter(isAudio).collect(Collectors.toList());
+        imageList = list.stream().filter(isImage).collect(Collectors.toList());
+        if(imageList.size()>0) {
+            if (checkDevicePermission()) {
+                taskImageAdapter = new TaskImageAdapter(this, imageList);
+                binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+            } else {
+                requestPermission();
+                if (checkDevicePermission()) {
+                    taskImageAdapter = new TaskImageAdapter(this, imageList);
+                    binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
+                }
+            }
+        }
+        audioItemsAdapter = new AudioItemsAdapter(this, audioList);
+        binding.audioRecyclerView.setAdapter(audioItemsAdapter);
+        importImage = false;
+        importAudio = false;
+    }
+
+
+
+
     private void importImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        activityResultLauncher.launch(intent);
+        if(checkDevicePermission()) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            activityResultLauncher.launch(intent);
+            importImage = true;
+        }else {
+            requestPermission();
+        }
     }
 
 
@@ -203,14 +226,23 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     private void addNewAudioFile(String filePath) {
-        String name = String.valueOf(importAudio?audioList.size()+1:imageList.size()+1);
+        String name = String.valueOf(audioList.size()+1);
         MediaItem item = new MediaItem();
         item.setName(name);
         item.setUri(filePath);
         item.setItemId(selectedItem.getId());
-        item.setType(importAudio?MediaItem.Type.AUDIO:MediaItem.Type.IMAGE);
+        item.setType(MediaItem.Type.AUDIO);
         categoryViewModel.insertMediaItem(item);
-        audioItemsAdapter.updateItems();
+    }
+
+    private void addNewImageFile(String filePath) {
+        String name = String.valueOf(imageList.size()+1);
+        MediaItem item = new MediaItem();
+        item.setName(name);
+        item.setUri(filePath);
+        item.setItemId(selectedItem.getId());
+        item.setType(MediaItem.Type.IMAGE);
+        categoryViewModel.insertMediaItem(item);
     }
 
 
@@ -241,7 +273,6 @@ public class DetailsActivity extends AppCompatActivity {
                 .build()
         );
         try{
-
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             mediaPlayer.start();
@@ -265,6 +296,17 @@ public class DetailsActivity extends AppCompatActivity {
                 REQUEST_PERMISSION_CODE);
     }
 
+    private void requestCamPermission() {
+        ActivityCompat.requestPermissions(this, new String[]
+                {Manifest.permission.CAMERA},REQUEST_CAMERA_PERMISSION_CODE);
+    }
+
+    private boolean checkCameraPermission() {
+        final int GRANTED_RES = PackageManager.PERMISSION_GRANTED;
+        int CAM_RES = ContextCompat.checkSelfPermission(this,Manifest.permission.CAMERA);
+        return CAM_RES == GRANTED_RES;
+    }
+
     private boolean checkDevicePermission() {
         final int GRANTED_RES = PackageManager.PERMISSION_GRANTED;
         int WRITE_EXTERNAL_STORAGE_RES = ContextCompat
@@ -284,6 +326,10 @@ public class DetailsActivity extends AppCompatActivity {
                     "Permission Granted":
                     "Permission Denied",
                     Toast.LENGTH_SHORT).show();
+        }else if (requestCode == REQUEST_CAMERA_PERMISSION_CODE){
+            Toast.makeText(this, grantResults.length>0&&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED?
+                    "Camera Granted":"Camera Denied",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -292,6 +338,11 @@ public class DetailsActivity extends AppCompatActivity {
         taskImageAdapter = new TaskImageAdapter(this, new ArrayList<>());
         binding.taskImagesRecyclerView.setAdapter(taskImageAdapter);
         binding.taskImagesRecyclerView.setLayoutManager(linearLayoutManager);
+
+        LinearLayoutManager audioLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        audioItemsAdapter = new AudioItemsAdapter(this, new ArrayList<>());
+        binding.audioRecyclerView.setAdapter(audioItemsAdapter);
+        binding.audioRecyclerView.setLayoutManager(audioLinearLayoutManager);
 
     }
 }
